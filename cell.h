@@ -12,6 +12,7 @@ private:
     Vehicle *vehicle;
     unsigned int speed_limit;
     Cell *next_cell;
+    Cell *previous_cell;
 public:
     Cell();
     virtual bool is_junction();
@@ -20,7 +21,9 @@ public:
     void reset_vehicle();
     Vehicle* get_vehicle();
     virtual bool has_next_cell();
+    virtual bool has_previous_cell();
     void set_next_cell(Cell *cell);
+    void set_previous_cell(Cell *cell);
     virtual Cell* get_next_cell(Cell *origin_cell);
     void set_speed_limit(unsigned int speed_limit);
     unsigned int get_speed_limit();

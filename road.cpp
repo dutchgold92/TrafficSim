@@ -13,9 +13,13 @@ Road::Road(unsigned long length)
         this->cells.push_back(cell);
     }
 
-    // link cells
+    // link cells forwards
     for(unsigned long i = 0; i < (this->cells.size() - 1); i++)
         ((Cell*)this->cells.at(i))->set_next_cell((Cell*)this->cells.at(i + 1));
+
+    // link cells backwards
+    for(unsigned long i = this->cells.size(); i-- > 1;)
+        ((Cell*)this->cells.at(i))->set_previous_cell((Cell*)this->cells.at(i - 1));
 }
 
 unsigned long Road::get_length()

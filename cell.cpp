@@ -6,6 +6,7 @@ Cell::Cell()
 {
     this->vehicle = 0;
     this->next_cell = 0;
+    this->previous_cell = 0;
 }
 
 bool Cell::is_junction()
@@ -35,12 +36,22 @@ Vehicle* Cell::get_vehicle()
 
 bool Cell::has_next_cell()
 {
-    return (this->next_cell != 0);
+    return(this->next_cell != 0);
+}
+
+bool Cell::has_previous_cell()
+{
+    return(this->previous_cell != 0);
 }
 
 void Cell::set_next_cell(Cell *cell)
 {
     this->next_cell = cell;
+}
+
+void Cell::set_previous_cell(Cell *cell)
+{
+    this->previous_cell = cell;
 }
 
 Cell* Cell::get_next_cell(Cell *origin_cell)

@@ -16,11 +16,17 @@ void Junction::connect_roads(Road *origin_road, Road *destination_road)
 {
     this->next_cells.push_back(destination_road->get_first_cell());
     origin_road->append_cell(this);
+    destination_road->get_first_cell()->set_previous_cell(this);
 }
 
 bool Junction::has_next_cell()
 {
     return(this->next_cells.size() > 0);
+}
+
+bool Junction::has_previous_cell()
+{
+    return(this->previous_cells.size() > 0);
 }
 
 Cell* Junction::get_next_cell(Cell *origin)

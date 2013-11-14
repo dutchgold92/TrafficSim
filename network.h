@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#define DEFAULT_DESIRED_DENSITY 0.2
+#define DEFAULT_INITIAL_DENSITY 0.6
 
 using namespace std;
 
@@ -18,8 +18,11 @@ class Network
 {
 private:
     vector<Road*> roads;
-    float desired_density;
+    vector<Road**> orphan_roads;
+    float desired_input_density;
     void init();
+    void init_traffic();
+    void identify_orphan_roads();
     void process();
     void apply_acceleration(Cell *cell, Vehicle *vehicle);
     void apply_deceleration(Cell *cell, Vehicle *vehicle);
@@ -32,8 +35,9 @@ public:
     Network(vector<Road*> roads);
     vector<Road*> get_roads();
     void step();
-    void set_desired_density(float desired_density);
-    float get_desired_density();
+    void set_desired_input_density(float desired_input_density);
+    float get_desired_input_density();
+    float get_actual_input_density();
     float get_overall_density();
 };
 

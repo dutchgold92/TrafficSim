@@ -3,7 +3,7 @@
 NetworkUpdater::NetworkUpdater(QObject *parent, Network *network) :
     QThread(parent)
 {
-    this->update_interval = 1;
+    this->update_interval = DEFAULT_UPDATE_INTERVAL;
     this->network = network;
     this->stopped = false;
     connect(this, SIGNAL(network_updated()), parent, SLOT(draw_network()), Qt::QueuedConnection);

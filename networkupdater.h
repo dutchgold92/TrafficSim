@@ -1,6 +1,8 @@
 #ifndef NETWORKUPDATER_H
 #define NETWORKUPDATER_H
 
+#define DEFAULT_UPDATE_INTERVAL 0.2
+
 #include <QThread>
 #include <network.h>
 

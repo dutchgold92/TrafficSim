@@ -61,7 +61,7 @@
       <item>
        <widget class="QLabel" name="updateTrafficDensityLabel">
         <property name="text">
-         <string>Traffic Density:</string>
+         <string>Input Density:</string>
         </property>
        </widget>
       </item>

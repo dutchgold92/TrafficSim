@@ -1,15 +1,47 @@
 #include "network.h"
 
+using namespace std;
+
 Network::Network(vector<Road *> roads)
 {
-    this->desired_density = DEFAULT_DESIRED_DENSITY;
+    this->desired_input_density = DEFAULT_INITIAL_DENSITY;
     this->roads = roads;
     init();
 }
 
 void Network::init()
 {
-    this->synthesize_traffic();
+    this->init_traffic();
+    this->identify_orphan_roads();
+}
+
+void Network::init_traffic()
+{
+    while(this->get_overall_density() < this->get_desired_input_density())
+    {
+        for(vector<Road*>::iterator it = this->roads.begin(); (it != this->roads.end()) && (this->get_overall_density() <= this->get_desired_input_density()); ++it)
+        {
+            Cell *cell = ((Road*)*it)->get_first_cell();
+
+            while(((Road*)*it)->get_density() < this->get_desired_input_density())
+            {
+                if((!cell->has_vehicle()) && ((rand() % 3 + 0) == 0))
+                    cell->set_vehicle(new Vehicle());
+
+                if(cell->has_next_cell())
+                    cell = cell->get_next_cell(cell);
+                else
+                    cell = ((Road*)*it)->get_first_cell();
+            }
+        }
+    }
+}
+
+void Network::identify_orphan_roads()
+{
+    for(vector<Road*>::iterator it = this->roads.begin(); it != this->roads.end(); ++it)
+        if(!((Road*)*it)->get_first_cell()->has_previous_cell())
+            this->orphan_roads.push_back((Road**)*it);
 }
 
 vector<Road*> Network::get_roads()
@@ -25,22 +57,14 @@ void Network::step()
 
 void Network::synthesize_traffic()
 {
-    cout << this->get_overall_density() << " / " << this->desired_density << endl;
-    if(this->get_overall_density() < this->desired_density)
-    {
-        Cell *cell = ((Road*)this->roads.front())->get_first_cell();
+    cout << this->get_actual_input_density() << " / " << this->desired_input_density << endl;
 
-        do
-        {
-            if(this->get_overall_density() >= this->desired_density)
-                return;
-            else if(!cell->has_vehicle())
-            {
-                cell->set_vehicle(new Vehicle(Vehicle::get_maximum_velocity() / 2));
-                cell = cell->get_next_cell(cell);
-            }
-        }
-        while(cell->has_next_cell() && !cell->has_vehicle());
+    for(vector<Road**>::iterator it = this->orphan_roads.begin(); (it != this->orphan_roads.end()) && (this->get_actual_input_density() <= this->get_desired_input_density()); ++it)
+    {
+        Cell *cell = ((Road*)*it)->get_first_cell();
+
+        if(!cell->has_vehicle())
+            cell->set_vehicle(new Vehicle(Vehicle::get_maximum_velocity()));
     }
 }
 
@@ -168,14 +192,33 @@ unsigned long Network::get_distance_to_next_junction(Cell *cell)
     return numeric_limits<unsigned long int>::max();
 }
 
-void Network::set_desired_density(float desired_density)
+void Network::set_desired_input_density(float desired_input_density)
 {
-    this->desired_density = desired_density;
+    this->desired_input_density = desired_input_density;
 }
 
-float Network::get_desired_density()
+float Network::get_desired_input_density()
 {
-    return this->desired_density;
+    return this->desired_input_density;
+}
+
+float Network::get_actual_input_density()
+{
+    float vehicles = 0;
+    float cells = 0;
+
+    for(vector<Road**>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
+    {
+        for(unsigned long i = 0; i < ((Road*)*it)->get_length(); i++)
+        {
+            if(((Cell*)((Road*)*it)->get_cell(i))->has_vehicle())
+                vehicles++;
+
+            cells++;
+        }
+    }
+
+    return(vehicles / cells);
 }
 
 float Network::get_overall_density()

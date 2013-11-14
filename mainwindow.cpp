@@ -10,14 +10,15 @@ MainWindow::MainWindow(QWidget *parent) :
     this->scene = new QGraphicsScene(0, 0, ui->gfx->frameSize().width(), ui->gfx->frameSize().height());
     ui->gfx->setScene(scene);
     ui->gfx->show();
+    ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL);
+    ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
 
     Road *road = new Road(50);
-    Road *road2 = new Road(10);
-    Road *road3 = new Road(30);
+    Road *road2 = new Road(25);
+    Road *road3 = new Road(70);
     Junction *junction = new Junction();
-    junction->connect_roads(road, road2);
-    Junction *junction2 = new Junction();
-    junction2->connect_roads(road2, road3);
+    junction->connect_roads(road, road3);
+    junction->connect_roads(road2, road3);
     vector<Road*> roads;
     roads.push_back(road);
     roads.push_back(road2);
@@ -99,7 +100,7 @@ void MainWindow::draw_network()
 void MainWindow::on_updateButton_pressed()
 {
     this->update_thread->set_update_interval(ui->updateIntervalInput->value());
-    this->network->set_desired_density(((float)ui->densityInput->value()) / 100);
+    this->network->set_desired_input_density(((float)ui->densityInput->value()) / 100);
 }
 
 void MainWindow::on_playPauseButton_pressed()

@@ -10,8 +10,6 @@
 #include <QtConcurrentRun>
 #include <unistd.h>
 
-#define DEFAULT_UPDATE_INTERVAL 1
-
 namespace Ui {
 class MainWindow;
 }
