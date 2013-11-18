@@ -95,6 +95,21 @@ void MainWindow::draw_network()
             scene->addItem(cell_item);
         }
     }
+
+    for(unsigned short i = 0; i < this->network->get_junctions().size(); i++)
+    {
+        Cell *cell = this->network->get_junctions().at(i);
+        QGraphicsRectItem *j_item = new QGraphicsRectItem((i * 10), (100), 10, 10);
+        j_item->setPen(QPen(Qt::red));
+
+        if(cell->has_vehicle())
+            j_item->setBrush(QBrush(Qt::blue));
+        else
+            j_item->setBrush(QBrush(Qt::black));
+
+        scene->addItem(j_item);
+
+    }
 }
 
 void MainWindow::on_updateButton_pressed()

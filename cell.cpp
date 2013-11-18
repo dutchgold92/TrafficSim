@@ -4,9 +4,20 @@ using namespace std;
 
 Cell::Cell()
 {
+    this->generation = 0;
     this->vehicle = 0;
     this->next_cell = 0;
     this->previous_cell = 0;
+}
+
+unsigned long Cell::get_generation()
+{
+    return this->generation;
+}
+
+void Cell::increment_generation()
+{
+    this->generation++;
 }
 
 bool Cell::is_junction()
@@ -57,6 +68,11 @@ void Cell::set_previous_cell(Cell *cell)
 Cell* Cell::get_next_cell(Cell *origin_cell)
 {
     return this->next_cell;
+}
+
+Cell* Cell::get_previous_cell(Cell *origin_cell)
+{
+    return this->previous_cell;
 }
 
 void Cell::set_speed_limit(unsigned int speed_limit)

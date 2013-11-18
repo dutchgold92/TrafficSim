@@ -2,8 +2,9 @@
 
 using namespace std;
 
-Network::Network(vector<Road *> roads)
+Network::Network(vector<Road*> roads)
 {
+    this->generation = 0;
     this->desired_input_density = DEFAULT_INITIAL_DENSITY;
     this->roads = roads;
     init();
@@ -13,6 +14,8 @@ void Network::init()
 {
     this->init_traffic();
     this->identify_orphan_roads();
+    this->identify_exit_roads();
+    this->identify_junctions();
 }
 
 void Network::init_traffic()
@@ -41,12 +44,56 @@ void Network::identify_orphan_roads()
 {
     for(vector<Road*>::iterator it = this->roads.begin(); it != this->roads.end(); ++it)
         if(!((Road*)*it)->get_first_cell()->has_previous_cell())
-            this->orphan_roads.push_back((Road**)*it);
+            this->orphan_roads.push_back((Road*)*it);
+}
+
+void Network::identify_exit_roads()
+{
+    for(vector<Road*>::reverse_iterator it = this->roads.rbegin(); it != this->roads.rend(); ++it)
+        if(!((Road*)*it)->get_last_cell()->has_next_cell())
+            this->exit_roads.push_back((Road*)*it);
+}
+
+void Network::identify_junctions()
+{
+    for(vector<Road*>::iterator it = this->roads.begin(); it != this->roads.end(); ++it)
+    {
+        Cell *cell = ((Road*)*it)->get_first_cell();
+
+        while(cell->has_next_cell())
+        {
+            if(cell->is_junction() && !this->is_known_junction((Junction*)cell))
+            {
+                this->junctions.push_back((Junction*)cell);
+            }
+
+            cell = cell->get_next_cell(cell);
+        }
+    }
+}
+
+bool Network::is_known_junction(Junction *junction)
+{
+    if(this->junctions.empty())
+        return false;
+
+    for(vector<Junction*>::iterator it = this->junctions.begin(); it != this->junctions.end(); ++it)
+    {
+        if(junction == (Junction*)*it)
+            return true;
+    }
+
+    return false;
 }
 
 vector<Road*> Network::get_roads()
 {
     return this->roads;
+}
+
+vector<Junction*> Network::get_junctions()
+{
+    return this->junctions;
 }
 
 void Network::step()
@@ -57,38 +104,70 @@ void Network::step()
 
 void Network::synthesize_traffic()
 {
-    cout << this->get_actual_input_density() << " / " << this->desired_input_density << endl;
+    //FIXME: debugging
+    //cout << this->get_actual_input_density() << " / " << this->desired_input_density << endl;
 
-    for(vector<Road**>::iterator it = this->orphan_roads.begin(); (it != this->orphan_roads.end()) && (this->get_actual_input_density() <= this->get_desired_input_density()); ++it)
+    for(vector<Road*>::iterator it = this->orphan_roads.begin(); (it != this->orphan_roads.end()) && (this->get_actual_input_density() <= this->get_desired_input_density()); ++it)
     {
         Cell *cell = ((Road*)*it)->get_first_cell();
 
         if(!cell->has_vehicle())
-            cell->set_vehicle(new Vehicle(Vehicle::get_maximum_velocity()));
+            cell->set_vehicle(new Vehicle(Vehicle::get_maximum_velocity() / 2));
     }
 }
 
 void Network::process()
 {
-    for(unsigned long i = this->roads.size(); i-- > 0;)
+    for(vector<Road*>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
+        this->process_road(((Road*)*it)->get_first_cell());
+
+    this->generation++;
+    apply_motion();
+    this->generation++;
+}
+
+void Network::process_road(Cell *first_cell)
+{
+    Cell *cell = first_cell;
+
+    for(;;)
     {
-        Road *road = this->roads.at(i);
+        if(cell->get_generation() <= this->generation)
+            this->process_cell(cell);
 
-        for(unsigned long x = road->get_length(); x-- > 0;)
+        if(cell->is_junction())
         {
-            Cell *cell = road->get_cell(x);
+            Junction *junction = (Junction*)cell;
 
-            if(cell->has_vehicle())
+            for(unsigned long i = 0; i < junction->get_next_cells().size(); i++)
             {
-                Vehicle *vehicle = cell->get_vehicle();
-                apply_acceleration(cell, vehicle);
-                apply_deceleration(cell, vehicle);
-                //apply_randomisation(vehicle);
+                Cell *next_cell = junction->get_next_cells().at(i);
+
+                if(next_cell->get_generation() <= this->generation)
+                    this->process_road(next_cell);
             }
+
+            return;
         }
+
+        if(cell->has_next_cell())
+            cell = cell->get_next_cell(cell);
+        else
+            return;
+    }
+}
+
+void Network::process_cell(Cell *cell)
+{
+    if(cell->has_vehicle())
+    {
+        Vehicle *vehicle = cell->get_vehicle();
+        apply_acceleration(cell, vehicle);
+        apply_deceleration(cell, vehicle);
+        apply_randomisation(vehicle);
     }
 
-    apply_motion();
+    cell->increment_generation();
 }
 
 void Network::apply_acceleration(Cell *cell, Vehicle *vehicle)
@@ -124,36 +203,61 @@ void Network::apply_randomisation(Vehicle *vehicle)
 
 void Network::apply_motion()
 {
-    vector<Road*> n = this->get_roads();
+    for(vector<Road*>::reverse_iterator it = this->exit_roads.rbegin(); it != this->exit_roads.rend(); ++it)
+        this->apply_motion_to_road(((Road*)*it)->get_last_cell());
+}
 
-    for(unsigned long i = n.size(); i-- > 0;)
+void Network::apply_motion_to_road(Cell *last_cell)
+{
+    Cell *cell = last_cell;
+
+    for(;;)
     {
-        Road *r = n.at(i);
+        if(cell->get_generation() <= this->generation)
+            this->apply_motion_to_cell(cell);
 
-        for(unsigned long x = r->get_length(); x-- > 0;)
+        if(cell->is_junction())
         {
-            Cell *c = r->get_cell(x);
+            Junction *junction = (Junction*)cell;
 
-            if(c->has_vehicle())
+            for(unsigned long i = junction->get_previous_cells().size(); i-- > 0;)
             {
-                Vehicle *v = c->get_vehicle();
-                unsigned int cells_to_move = v->get_velocity();
+                Cell *previous_cell = junction->get_previous_cells().at(i);
 
-                if(cells_to_move > 0)
+                if(previous_cell->get_generation() <= this->generation)
+                    this->apply_motion_to_road(previous_cell);
+            }
+
+            return;
+        }
+
+        if(cell->has_previous_cell())
+            cell = cell->get_previous_cell(cell);
+        else
+            return;
+    }
+}
+
+void Network::apply_motion_to_cell(Cell *cell)
+{
+    if(cell->has_vehicle())
+    {
+        Vehicle *v = cell->get_vehicle();
+        unsigned int cells_to_move = v->get_velocity();
+
+        if(cells_to_move > 0)
+        {
+            cell->reset_vehicle();
+
+            while(cell->has_next_cell())
+            {
+                cell = cell->get_next_cell(cell);
+                cells_to_move--;
+
+                if(cells_to_move == 0)
                 {
-                    c->reset_vehicle();
-
-                    while(c->has_next_cell())
-                    {
-                        c = c->get_next_cell(c);
-                        cells_to_move--;
-
-                        if(cells_to_move == 0)
-                        {
-                            c->set_vehicle(v);
-                            break;
-                        }
-                    }
+                    cell->set_vehicle(v);
+                    break;
                 }
             }
         }
@@ -207,7 +311,7 @@ float Network::get_actual_input_density()
     float vehicles = 0;
     float cells = 0;
 
-    for(vector<Road**>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
+    for(vector<Road*>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
     {
         for(unsigned long i = 0; i < ((Road*)*it)->get_length(); i++)
         {
