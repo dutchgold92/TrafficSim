@@ -20,6 +20,16 @@ void Cell::increment_generation()
     this->generation++;
 }
 
+unsigned long Cell::get_display_generation()
+{
+    return this->display_generation;
+}
+
+void Cell::increment_display_generation()
+{
+    this->display_generation++;
+}
+
 bool Cell::is_junction()
 {
     return false;
@@ -83,4 +93,14 @@ void Cell::set_speed_limit(unsigned int speed_limit)
 unsigned int Cell::get_speed_limit()
 {
     return this->speed_limit;
+}
+
+void Cell::set_direction(display_direction direction)
+{
+    this->direction = direction;
+}
+
+Cell::display_direction Cell::get_direction()
+{
+    return this->direction;
 }

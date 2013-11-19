@@ -10,6 +10,8 @@
 #include <QtConcurrentRun>
 #include <unistd.h>
 
+#define DISPLAY_CELL_SIZE 10
+
 namespace Ui {
 class MainWindow;
 }
@@ -18,11 +20,14 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
+    unsigned long generation;
     Ui::MainWindow *ui;
     Network *network;
     QGraphicsScene *scene;
     bool updating;
     NetworkUpdater *update_thread;
+    void process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y);
+    void process_cell(Cell *cell, qreal x, qreal y);
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();

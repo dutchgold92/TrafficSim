@@ -9,6 +9,7 @@
 class Junction : public Cell
 {
 private:
+    unsigned long generation;
     vector<Cell*> next_cells;
     vector<Cell*> previous_cells;
     bool is_destination_road_connected(Road *destination_road);

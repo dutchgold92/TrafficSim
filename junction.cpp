@@ -4,7 +4,7 @@ using namespace std;
 
 Junction::Junction()
 {
-
+    this->generation = 0;
 }
 
 bool Junction::is_junction()

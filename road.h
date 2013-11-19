@@ -7,18 +7,20 @@
 
 class Road
 {
-private:
-    unsigned long length;
-    unsigned int speed_limit;
-    vector<Cell*> cells;
 public:
-    Road(unsigned long length);
+    Road(unsigned long length, Cell::display_direction direction);
     unsigned long get_length();
     void append_cell(Cell* cell);
     Cell* get_cell(unsigned int index);
     Cell* get_first_cell();
     Cell* get_last_cell();
     float get_density();
+    Cell::display_direction get_direction();
+private:
+    unsigned long length;
+    unsigned int speed_limit;
+    vector<Cell*> cells;
+    Cell::display_direction direction;
 };
 
 #endif // ROAD_H

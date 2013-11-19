@@ -7,15 +7,16 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->updating = true;
+    this->generation = 0;
     this->scene = new QGraphicsScene(0, 0, ui->gfx->frameSize().width(), ui->gfx->frameSize().height());
     ui->gfx->setScene(scene);
     ui->gfx->show();
     ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL);
     ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
 
-    Road *road = new Road(50);
-    Road *road2 = new Road(25);
-    Road *road3 = new Road(70);
+    Road *road = new Road(25, Cell::left_to_right);
+    Road *road2 = new Road(25, Cell::bottom_to_top);
+    Road *road3 = new Road(25, Cell::left_to_right);
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
@@ -73,7 +74,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::draw_network()
 {
-    this->scene->clear();
+    /*this->scene->clear();
 
     for(unsigned short x = 0; x < network->get_roads().size(); x++)
     {
@@ -109,7 +110,150 @@ void MainWindow::draw_network()
 
         scene->addItem(j_item);
 
+    }*/
+
+    this->scene->clear();
+    this->process_road(((Road*)this->network->get_roads().front())->get_first_cell(), true, 0, 0);
+    this->generation++;
+}
+
+void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y)
+{
+    Cell *cell = first_cell;
+
+    for(;;)
+    {
+        if(cell->get_display_generation() <= this->generation)
+            this->process_cell(cell, x, y);
+        else
+            cout << "already processed?" << endl;
+
+        if(cell->is_junction())
+        {
+            Junction *junction = (Junction*)cell;
+
+            for(unsigned long i = 0; i < junction->get_next_cells().size(); i++)
+            {
+                Cell *next_cell = junction->get_next_cells().at(i);
+
+                if(next_cell->get_display_generation() <= this->generation)
+                {
+                    Cell::display_direction direction = next_cell->get_direction();
+
+                    switch(direction)
+                    {
+                        case Cell::left_to_right:
+                            x += DISPLAY_CELL_SIZE;
+                            break;
+                        case Cell::right_to_left:
+                            x -= DISPLAY_CELL_SIZE;
+                            break;
+                        case Cell::top_to_bottom:
+                            y -= DISPLAY_CELL_SIZE;
+                            break;
+                        case Cell::bottom_to_top:
+                            y += DISPLAY_CELL_SIZE;
+                            break;
+                    }
+
+                    this->process_road(next_cell, true, x, y);
+                }
+            }
+
+            for(unsigned long i = 0; i < junction->get_previous_cells().size(); i++)
+            {
+                Cell *previous_cell = junction->get_previous_cells().at(i);
+
+                if(previous_cell->get_display_generation() <= this->generation)
+                {
+                    Cell::display_direction direction = previous_cell->get_direction();
+
+                    switch(direction)
+                    {
+                        case Cell::left_to_right:
+                            x -= DISPLAY_CELL_SIZE;
+                            break;
+                        case Cell::right_to_left:
+                            x += DISPLAY_CELL_SIZE;
+                            break;
+                        case Cell::top_to_bottom:
+                            y += DISPLAY_CELL_SIZE;
+                            break;
+                        case Cell::bottom_to_top:
+                            y -= DISPLAY_CELL_SIZE;
+                            break;
+                    }
+
+                    this->process_road(previous_cell, false, x, y);
+                }
+            }
+
+            return;
+        }
+
+        if(forward_processing && cell->has_next_cell())
+        {
+            Cell::display_direction direction = cell->get_direction();
+
+            switch(direction)
+            {
+                case Cell::left_to_right:
+                    x += DISPLAY_CELL_SIZE;
+                    break;
+                case Cell::right_to_left:
+                    x -= DISPLAY_CELL_SIZE;
+                    break;
+                case Cell::top_to_bottom:
+                    y -= DISPLAY_CELL_SIZE;
+                    break;
+                case Cell::bottom_to_top:
+                    y += DISPLAY_CELL_SIZE;
+                    break;
+            }
+
+            cell = cell->get_next_cell(cell);
+        }
+        else if(!forward_processing && cell->has_previous_cell())
+        {
+            Cell::display_direction direction = cell->get_direction();
+
+            switch(direction)
+            {
+                case Cell::left_to_right:
+                    x -= DISPLAY_CELL_SIZE;
+                    break;
+                case Cell::right_to_left:
+                    x += DISPLAY_CELL_SIZE;
+                    break;
+                case Cell::top_to_bottom:
+                    y += DISPLAY_CELL_SIZE;
+                    break;
+                case Cell::bottom_to_top:
+                    y -= DISPLAY_CELL_SIZE;
+                    break;
+            }
+
+            cell = cell->get_previous_cell(cell);
+        }
+        else
+            return;
     }
+}
+
+void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
+{
+    QGraphicsRectItem *display_cell = new QGraphicsRectItem(x, y, DISPLAY_CELL_SIZE, DISPLAY_CELL_SIZE);
+
+    if(cell->has_vehicle())
+        display_cell->setBrush(QBrush(Qt::blue));
+    else
+        display_cell->setBrush(QBrush(Qt::black));
+
+    if(cell->is_junction())
+        display_cell->setPen(QPen(Qt::red));
+
+    scene->addItem(display_cell);
+    cell->increment_display_generation();
 }
 
 void MainWindow::on_updateButton_pressed()

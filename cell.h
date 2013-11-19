@@ -8,16 +8,13 @@ using namespace std;
 
 class Cell
 {
-private:
-    unsigned long generation;
-    Vehicle *vehicle;
-    unsigned int speed_limit;
-    Cell *next_cell;
-    Cell *previous_cell;
 public:
     Cell();
+    enum display_direction {left_to_right, top_to_bottom, bottom_to_top, right_to_left};
     unsigned long get_generation();
     void increment_generation();
+    unsigned long get_display_generation();
+    void increment_display_generation();
     virtual bool is_junction();
     bool has_vehicle();
     void set_vehicle(Vehicle *vehicle);
@@ -31,6 +28,16 @@ public:
     virtual Cell* get_previous_cell(Cell *origin_cell);
     void set_speed_limit(unsigned int speed_limit);
     unsigned int get_speed_limit();
+    void set_direction(display_direction direction);
+    display_direction get_direction();
+private:
+    unsigned long generation;
+    unsigned long display_generation;
+    Vehicle *vehicle;
+    unsigned int speed_limit;
+    Cell *next_cell;
+    Cell *previous_cell;
+    display_direction direction;
 };
 
 #endif // CELL_H

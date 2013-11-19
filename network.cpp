@@ -335,3 +335,8 @@ float Network::get_overall_density()
 
     return (densities / roads);
 }
+
+vector<Road*> Network::get_orphan_roads()
+{
+    return this->orphan_roads;
+}

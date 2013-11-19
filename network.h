@@ -50,6 +50,7 @@ public:
     float get_desired_input_density();
     float get_actual_input_density();
     float get_overall_density();
+    vector<Road*> get_orphan_roads();
 };
 
 #endif // NETWORK_H

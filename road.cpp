@@ -1,8 +1,9 @@
 #include "road.h"
 
-Road::Road(unsigned long length)
+Road::Road(unsigned long length, Cell::display_direction direction)
 {
     this->length = length;
+    this->direction = direction;
     this->speed_limit = DEFAULT_SPEED_LIMIT;
 
     // initialise cells
@@ -10,6 +11,7 @@ Road::Road(unsigned long length)
     {
         Cell *cell = new Cell();
         cell->set_speed_limit(this->speed_limit);
+        cell->set_direction(direction);
         this->cells.push_back(cell);
     }
 
@@ -59,4 +61,9 @@ float Road::get_density()
             vehicle_count++;
 
     return (vehicle_count / float(this->length));
+}
+
+Cell::display_direction Road::get_direction()
+{
+    return this->direction;
 }
