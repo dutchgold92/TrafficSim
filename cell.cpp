@@ -5,6 +5,7 @@ using namespace std;
 Cell::Cell()
 {
     this->generation = 0;
+    this->display_generation = 0;
     this->vehicle = 0;
     this->next_cell = 0;
     this->previous_cell = 0;

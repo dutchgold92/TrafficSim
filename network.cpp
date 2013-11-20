@@ -98,18 +98,6 @@ vector<Junction*> Network::get_junctions()
 
 void Network::step()
 {
-    // -- FIXME: debugging
-    cout << "gen: " << this->generation << endl;
-
-    for(unsigned int i = 0; i < this->roads.size(); i++)
-    {
-        for(int x = 0; x < this->roads.at(i)->get_length(); x++)
-            cout << this->roads.at(i)->get_cell(x)->get_generation() << ",";
-    }
-
-    cout << endl << endl;
-    // -- / FIXME: debugging
-
     this->synthesize_traffic();
     this->process();
 }
