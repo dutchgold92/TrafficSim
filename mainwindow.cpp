@@ -125,8 +125,6 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
     {
         if(cell->get_display_generation() <= this->generation)
             this->process_cell(cell, x, y);
-        else
-            cout << "already processed?" << endl;
 
         if(cell->is_junction())
         {

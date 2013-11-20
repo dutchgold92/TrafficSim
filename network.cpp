@@ -98,6 +98,18 @@ vector<Junction*> Network::get_junctions()
 
 void Network::step()
 {
+    // -- FIXME: debugging
+    cout << "gen: " << this->generation << endl;
+
+    for(unsigned int i = 0; i < this->roads.size(); i++)
+    {
+        for(int x = 0; x < this->roads.at(i)->get_length(); x++)
+            cout << this->roads.at(i)->get_cell(x)->get_generation() << ",";
+    }
+
+    cout << endl << endl;
+    // -- / FIXME: debugging
+
     this->synthesize_traffic();
     this->process();
 }
@@ -118,12 +130,13 @@ void Network::synthesize_traffic()
 
 void Network::process()
 {
+    this->generation++;
+
     for(vector<Road*>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
         this->process_road(((Road*)*it)->get_first_cell());
 
     this->generation++;
     apply_motion();
-    this->generation++;
 }
 
 void Network::process_road(Cell *first_cell)
@@ -132,7 +145,7 @@ void Network::process_road(Cell *first_cell)
 
     for(;;)
     {
-        if(cell->get_generation() <= this->generation)
+        if(cell->get_generation() < this->generation)
             this->process_cell(cell);
 
         if(cell->is_junction())
@@ -143,7 +156,7 @@ void Network::process_road(Cell *first_cell)
             {
                 Cell *next_cell = junction->get_next_cells().at(i);
 
-                if(next_cell->get_generation() <= this->generation)
+                if(next_cell->get_generation() < this->generation)
                     this->process_road(next_cell);
             }
 
@@ -213,7 +226,7 @@ void Network::apply_motion_to_road(Cell *last_cell)
 
     for(;;)
     {
-        if(cell->get_generation() <= this->generation)
+        if(cell->get_generation() < this->generation)
             this->apply_motion_to_cell(cell);
 
         if(cell->is_junction())
@@ -224,7 +237,7 @@ void Network::apply_motion_to_road(Cell *last_cell)
             {
                 Cell *previous_cell = junction->get_previous_cells().at(i);
 
-                if(previous_cell->get_generation() <= this->generation)
+                if(previous_cell->get_generation() < this->generation)
                     this->apply_motion_to_road(previous_cell);
             }
 
@@ -240,6 +253,8 @@ void Network::apply_motion_to_road(Cell *last_cell)
 
 void Network::apply_motion_to_cell(Cell *cell)
 {
+    cell->increment_generation();
+
     if(cell->has_vehicle())
     {
         Vehicle *v = cell->get_vehicle();
