@@ -11,19 +11,29 @@ MainWindow::MainWindow(QWidget *parent) :
     this->scene = new QGraphicsScene(0, 0, ui->gfx->frameSize().width(), ui->gfx->frameSize().height());
     ui->gfx->setScene(scene);
     ui->gfx->show();
-    ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL);
+    ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL * 100);
     ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
 
     Road *road = new Road(25, Cell::left_to_right);
-    Road *road2 = new Road(25, Cell::bottom_to_top);
+    Road *road2 = new Road(25, Cell::top_to_bottom);
     Road *road3 = new Road(25, Cell::left_to_right);
+    Road *road4 = new Road(25, Cell::bottom_to_top);
+    //Road *road5 = new Road(25, Cell::top_to_bottom);
+    //Road *road6 = new Road(25, Cell::left_to_right);
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
+    Junction *junction2 = new Junction();
+    //junction->connect_roads(road3, road4);
+    //junction->connect_roads(road3, road5);
+    //junction->connect_roads(road3, road6);
     vector<Road*> roads;
     roads.push_back(road);
     roads.push_back(road2);
     roads.push_back(road3);
+    roads.push_back(road4);
+    //roads.push_back(road5);
+    //roads.push_back(road6);
     this->network = new Network(roads);
 
     /*// -- Start display
@@ -256,7 +266,7 @@ void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
 
 void MainWindow::on_updateButton_pressed()
 {
-    this->update_thread->set_update_interval(ui->updateIntervalInput->value());
+    this->update_thread->set_update_interval((float)ui->updateIntervalInput->value() / 100);
     this->network->set_desired_input_density(((float)ui->densityInput->value()) / 100);
 }
 

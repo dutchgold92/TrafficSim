@@ -40,21 +40,21 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="updateIntervalInput">
-        <property name="suffix">
-         <string> seconds</string>
-        </property>
+       <widget class="QSlider" name="updateIntervalInput">
         <property name="minimum">
-         <double>0.050000000000000</double>
+         <number>5</number>
         </property>
         <property name="maximum">
-         <double>10.000000000000000</double>
+         <number>500</number>
         </property>
         <property name="singleStep">
-         <double>0.050000000000000</double>
+         <number>5</number>
         </property>
         <property name="value">
-         <double>1.000000000000000</double>
+         <number>50</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
