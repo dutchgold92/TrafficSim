@@ -120,14 +120,16 @@ void Network::process()
 {
     this->generation++;
 
-    for(vector<Road*>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
-        this->process_road(((Road*)*it)->get_first_cell());
+    //for(vector<Road*>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
+        //this->process_road(((Road*)*it)->get_first_cell());
+
+    this->process_road(((Road*)this->roads.front())->get_first_cell(), true);
 
     this->generation++;
     apply_motion();
 }
 
-void Network::process_road(Cell *first_cell)
+void Network::process_road(Cell *first_cell, bool forward_processing)
 {
     Cell *cell = first_cell;
 
@@ -145,14 +147,24 @@ void Network::process_road(Cell *first_cell)
                 Cell *next_cell = junction->get_next_cells().at(i);
 
                 if(next_cell->get_generation() < this->generation)
-                    this->process_road(next_cell);
+                    this->process_road(next_cell, true);
+            }
+
+            for(unsigned long i = 0; i < junction->get_previous_cells().size(); i++)
+            {
+                Cell *previous_cell = junction->get_previous_cells().at(i);
+
+                if(previous_cell->get_direction() < this->generation)
+                    this->process_road(previous_cell, false);
             }
 
             return;
         }
 
-        if(cell->has_next_cell())
+        if(forward_processing && cell->has_next_cell())
             cell = cell->get_next_cell(cell);
+        else if(!forward_processing && cell->has_previous_cell())
+            cell = cell->get_previous_cell(cell);
         else
             return;
     }
@@ -204,11 +216,13 @@ void Network::apply_randomisation(Vehicle *vehicle)
 
 void Network::apply_motion()
 {
-    for(vector<Road*>::reverse_iterator it = this->exit_roads.rbegin(); it != this->exit_roads.rend(); ++it)
-        this->apply_motion_to_road(((Road*)*it)->get_last_cell());
+    //for(vector<Road*>::reverse_iterator it = this->exit_roads.rbegin(); it != this->exit_roads.rend(); ++it)
+        //this->apply_motion_to_road(((Road*)*it)->get_last_cell());
+
+    this->apply_motion_to_road(((Road*)this->roads.back())->get_last_cell(), false);
 }
 
-void Network::apply_motion_to_road(Cell *last_cell)
+void Network::apply_motion_to_road(Cell *last_cell, bool forward_processing)
 {
     Cell *cell = last_cell;
 
@@ -221,18 +235,28 @@ void Network::apply_motion_to_road(Cell *last_cell)
         {
             Junction *junction = (Junction*)cell;
 
+            for(unsigned long i = junction->get_next_cells().size(); i-- > 0;)
+            {
+                Cell *next_cell = junction->get_next_cells().at(i);
+
+                if(next_cell->get_generation() < this->generation)
+                    this->apply_motion_to_road(next_cell, true);
+            }
+
             for(unsigned long i = junction->get_previous_cells().size(); i-- > 0;)
             {
                 Cell *previous_cell = junction->get_previous_cells().at(i);
 
                 if(previous_cell->get_generation() < this->generation)
-                    this->apply_motion_to_road(previous_cell);
+                    this->apply_motion_to_road(previous_cell, false);
             }
 
             return;
         }
 
-        if(cell->has_previous_cell())
+        if(forward_processing && cell->has_next_cell())
+            cell = cell->get_next_cell(cell);
+        else if(!forward_processing && cell->has_previous_cell())
             cell = cell->get_previous_cell(cell);
         else
             return;

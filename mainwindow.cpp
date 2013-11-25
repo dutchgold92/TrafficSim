@@ -15,25 +15,25 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
 
     Road *road = new Road(25, Cell::left_to_right);
-    Road *road2 = new Road(25, Cell::top_to_bottom);
+    Road *road2 = new Road(25, Cell::bottom_to_top);
     Road *road3 = new Road(25, Cell::left_to_right);
-    Road *road4 = new Road(25, Cell::bottom_to_top);
-    //Road *road5 = new Road(25, Cell::top_to_bottom);
-    //Road *road6 = new Road(25, Cell::left_to_right);
+    //Road *road4 = new Road(25, Cell::bottom_to_top);
+    Road *road5 = new Road(25, Cell::bottom_to_top);
+    Road *road6 = new Road(25, Cell::left_to_right);
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
     Junction *junction2 = new Junction();
-    //junction->connect_roads(road3, road4);
-    //junction->connect_roads(road3, road5);
-    //junction->connect_roads(road3, road6);
+    //junction2->connect_roads(road2, road4);
+    junction2->connect_roads(road3, road5);
+    junction2->connect_roads(road3, road6);
     vector<Road*> roads;
     roads.push_back(road);
     roads.push_back(road2);
     roads.push_back(road3);
-    roads.push_back(road4);
-    //roads.push_back(road5);
-    //roads.push_back(road6);
+    //roads.push_back(road4);
+    roads.push_back(road5);
+    roads.push_back(road6);
     this->network = new Network(roads);
 
     /*// -- Start display
@@ -151,20 +151,18 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
                     switch(direction)
                     {
                         case Cell::left_to_right:
-                            x += DISPLAY_CELL_SIZE;
+                            this->process_road(next_cell, true, (x + DISPLAY_CELL_SIZE), y);
                             break;
                         case Cell::right_to_left:
-                            x -= DISPLAY_CELL_SIZE;
+                            this->process_road(next_cell, true, (x - DISPLAY_CELL_SIZE), y);
                             break;
                         case Cell::top_to_bottom:
-                            y -= DISPLAY_CELL_SIZE;
+                            this->process_road(next_cell, true, x, (y - DISPLAY_CELL_SIZE));
                             break;
                         case Cell::bottom_to_top:
-                            y += DISPLAY_CELL_SIZE;
+                            this->process_road(next_cell, true, x, (y + DISPLAY_CELL_SIZE));
                             break;
                     }
-
-                    this->process_road(next_cell, true, x, y);
                 }
             }
 
@@ -179,20 +177,18 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
                     switch(direction)
                     {
                         case Cell::left_to_right:
-                            x -= DISPLAY_CELL_SIZE;
+                            this->process_road(previous_cell, false, (x - DISPLAY_CELL_SIZE), y);
                             break;
                         case Cell::right_to_left:
-                            x += DISPLAY_CELL_SIZE;
+                            this->process_road(previous_cell, false, (x + DISPLAY_CELL_SIZE), y);
                             break;
                         case Cell::top_to_bottom:
-                            y += DISPLAY_CELL_SIZE;
+                            this->process_road(previous_cell, false, x, (y + DISPLAY_CELL_SIZE));
                             break;
                         case Cell::bottom_to_top:
-                            y -= DISPLAY_CELL_SIZE;
+                            this->process_road(previous_cell, false, x, (y - DISPLAY_CELL_SIZE));
                             break;
                     }
-
-                    this->process_road(previous_cell, false, x, y);
                 }
             }
 

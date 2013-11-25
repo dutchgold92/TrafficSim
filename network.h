@@ -30,13 +30,13 @@ private:
     void identify_junctions();
     bool is_known_junction(Junction *junction);
     void process();
-    void process_road(Cell *first_cell);
+    void process_road(Cell *first_cell, bool forward_processing);
     void process_cell(Cell *cell);
     void apply_acceleration(Cell *cell, Vehicle *vehicle);
     void apply_deceleration(Cell *cell, Vehicle *vehicle);
     void apply_randomisation(Vehicle *vehicle);
     void apply_motion();
-    void apply_motion_to_road(Cell *last_cell);
+    void apply_motion_to_road(Cell *last_cell, bool forward_processing);
     void apply_motion_to_cell(Cell *cell);
     unsigned long get_front_clearance(Cell *cell);
     unsigned long get_distance_to_next_junction(Cell *cell);
