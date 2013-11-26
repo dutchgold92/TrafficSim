@@ -100,6 +100,12 @@ void Network::step()
 {
     this->synthesize_traffic();
     this->process();
+
+    /*// FIXME: debugging - testing cell gens
+    for(vector<Road*>::size_type i = 0; i < this->roads.size(); i++)
+        for(unsigned long x = 0; x < this->roads.at(i)->get_length(); x++)
+            cout << this->roads.at(i)->get_cell(x)->get_generation() << ",";
+    cout << endl;*/
 }
 
 void Network::synthesize_traffic()
@@ -127,6 +133,9 @@ void Network::process()
 
     this->generation++;
     apply_motion();
+
+    for(unsigned int i = 0; i < this->junctions.size(); i++)
+        ((Junction*)this->junctions.at(i))->toggle_active_incoming_road();
 }
 
 void Network::process_road(Cell *first_cell, bool forward_processing)
@@ -198,8 +207,21 @@ void Network::apply_deceleration(Cell *cell, Vehicle *vehicle)
     {
         unsigned long distance_to_junction = get_distance_to_next_junction(cell);
 
-        if((vehicle->get_velocity() > 2) && (distance_to_junction <= vehicle->get_velocity()))
-            vehicle->decrease_velocity(distance_to_junction + 1);
+        if(distance_to_junction <= vehicle->get_velocity())
+        {
+            Cell *junction;
+            Cell *cell_before_junction = cell;
+
+            for(unsigned long i = 0; i < (distance_to_junction - 1); i++)
+                cell_before_junction = cell_before_junction->get_next_cell(cell_before_junction);
+
+            junction = cell_before_junction->get_next_cell(cell_before_junction);
+
+            /*if(!((Junction*)junction)->is_accessible_from_road(cell_before_junction))
+                vehicle->decrease_velocity(distance_to_junction);
+            else*/
+                vehicle->decrease_velocity(distance_to_junction + 1);
+        }
 
         unsigned long front_clearance = get_front_clearance(cell);
 

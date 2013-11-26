@@ -35,6 +35,7 @@ private:
     void apply_acceleration(Cell *cell, Vehicle *vehicle);
     void apply_deceleration(Cell *cell, Vehicle *vehicle);
     void apply_randomisation(Vehicle *vehicle);
+    void enter_junction(Junction *junction, Vehicle *vehicle);
     void apply_motion();
     void apply_motion_to_road(Cell *last_cell, bool forward_processing);
     void apply_motion_to_cell(Cell *cell);

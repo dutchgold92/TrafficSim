@@ -1,7 +1,7 @@
 #ifndef NETWORKUPDATER_H
 #define NETWORKUPDATER_H
 
-#define DEFAULT_UPDATE_INTERVAL 1.5
+#define DEFAULT_UPDATE_INTERVAL 0.5
 
 #include <QThread>
 #include <network.h>

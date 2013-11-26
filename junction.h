@@ -14,6 +14,7 @@ private:
     vector<Cell*> previous_cells;
     bool is_destination_road_connected(Road *destination_road);
     bool is_origin_road_connected(Road *origin_road);
+    Cell *active_incoming_road;
 public:
     Junction();
     bool is_junction();
@@ -24,6 +25,8 @@ public:
     vector<Cell*> get_next_cells();
     Cell* get_previous_cell(Cell *origin_cell);
     vector<Cell*> get_previous_cells();
+    bool is_accessible_from_road(Cell *cell);
+    void toggle_active_incoming_road();
 };
 
 #endif // JUNCTION_H
