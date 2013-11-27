@@ -30,9 +30,9 @@ void Junction::connect_roads(Road *origin_road, Road *destination_road)
 
 bool Junction::is_destination_road_connected(Road *destination_road)
 {
-    for(vector<Cell*>::iterator it = this->next_cells.begin(); it != this->next_cells.end(); ++it)
+    for(vector<Cell*>::size_type i = 0; i < this->next_cells.size(); i++)
     {
-        if((Cell*)*it == destination_road->get_first_cell())
+        if(this->next_cells.at(i) == destination_road->get_first_cell())
             return true;
     }
 
@@ -41,9 +41,9 @@ bool Junction::is_destination_road_connected(Road *destination_road)
 
 bool Junction::is_origin_road_connected(Road *origin_road)
 {
-    for(vector<Cell*>::iterator it = this->previous_cells.end(); it != this->previous_cells.begin(); --it)
+    for(vector<Cell*>::size_type i = 0; i < this->previous_cells.size(); i++)
     {
-        if((Cell*)*it == origin_road->get_last_cell())
+        if(this->previous_cells.at(i) == origin_road->get_last_cell())
             return true;
     }
 

@@ -36,42 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     roads.push_back(road6);
     this->network = new Network(roads);
 
-    /*// -- Start display
-    for(;;)
-    {
-        bool empty = true;
-
-        for(Cell *c = r->get_first_cell(); c->has_next_cell(); c = c->get_next_cell(c))
-        {
-            if(c->is_junction())
-            {
-                cout << "|";
-
-                if(c->has_vehicle())
-                    cout << c->get_vehicle()->get_velocity();
-                else
-                    cout << "X";
-
-                cout << "|";
-            }
-            else if(c->has_vehicle())
-            {
-                cout << c->get_vehicle()->get_velocity();
-                empty = false;
-            }
-            else
-                cout << ".";
-        }
-
-        cout << "\n" << endl;
-
-        if(empty)
-            return 0;
-
-        n->step();
-    }
-    // -- End display*/
-
     connect(this, SIGNAL(network_updated()), this, SLOT(draw_network()), Qt::QueuedConnection);
     this->update_thread = new NetworkUpdater(this, this->network);
     this->update_thread->start();
@@ -92,6 +56,16 @@ void MainWindow::draw_network()
     for(vector<Road*>::size_type i = 0; i < this->network->get_roads().size(); i++)
         for(unsigned long x = 0; x < this->network->get_roads().at(i)->get_length(); x++)
             cout << this->network->get_roads().at(i)->get_cell(x)->get_display_generation() << ",";
+    cout << endl;*/
+
+    /*for(int i = 0; i < 25; i++)
+    {
+        if(this->network->get_roads().at(3)->get_cell(i)->has_vehicle())
+            cout << this->network->get_roads().at(3)->get_cell(i)->get_vehicle()->get_velocity();
+        else
+            cout << ".";
+    }
+
     cout << endl;*/
 }
 

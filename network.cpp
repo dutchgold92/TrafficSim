@@ -125,14 +125,9 @@ void Network::synthesize_traffic()
 void Network::process()
 {
     this->generation++;
-
-    //for(vector<Road*>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
-        //this->process_road(((Road*)*it)->get_first_cell());
-
-    this->process_road(((Road*)this->roads.front())->get_first_cell(), true);
-
+    this->process_road(((Road*)this->roads.back())->get_last_cell(), false);
     this->generation++;
-    apply_motion();
+    this->apply_motion_to_road(((Road*)this->roads.back())->get_last_cell(), false);
 
     for(unsigned int i = 0; i < this->junctions.size(); i++)
         ((Junction*)this->junctions.at(i))->toggle_active_incoming_road();
@@ -236,14 +231,6 @@ void Network::apply_randomisation(Vehicle *vehicle)
         vehicle->decrement_velocity();
 }
 
-void Network::apply_motion()
-{
-    //for(vector<Road*>::reverse_iterator it = this->exit_roads.rbegin(); it != this->exit_roads.rend(); ++it)
-        //this->apply_motion_to_road(((Road*)*it)->get_last_cell());
-
-    this->apply_motion_to_road(((Road*)this->roads.back())->get_last_cell(), false);
-}
-
 void Network::apply_motion_to_road(Cell *last_cell, bool forward_processing)
 {
     Cell *cell = last_cell;
@@ -275,13 +262,15 @@ void Network::apply_motion_to_road(Cell *last_cell, bool forward_processing)
 
             return;
         }
-
-        if(forward_processing && cell->has_next_cell())
-            cell = cell->get_next_cell(cell);
-        else if(!forward_processing && cell->has_previous_cell())
-            cell = cell->get_previous_cell(cell);
         else
-            return;
+        {
+            if(forward_processing && cell->has_next_cell())
+                cell = cell->get_next_cell(cell);
+            else if(!forward_processing && cell->has_previous_cell())
+                cell = cell->get_previous_cell(cell);
+            else
+                return;
+        }
     }
 }
 
@@ -306,7 +295,7 @@ void Network::apply_motion_to_cell(Cell *cell)
                 if(cells_to_move == 0)
                 {
                     cell->set_vehicle(v);
-                    break;
+                    return;
                 }
             }
         }

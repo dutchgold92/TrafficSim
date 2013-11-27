@@ -13,6 +13,7 @@ public:
     void decrease_velocity(unsigned long steps);
     unsigned int get_velocity();
     static unsigned int get_maximum_velocity();
+    signed long __cell_index = -1;
 };
 
 #endif // VEHICLE_H
