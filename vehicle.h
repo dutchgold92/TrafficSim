@@ -6,6 +6,7 @@ class Vehicle
 private:
     unsigned int velocity;
     const static unsigned int MAXIMUM_VELOCITY = 5;
+    unsigned long generation;
 public:
     Vehicle(unsigned int velocity = 0);
     void increment_velocity();
@@ -13,7 +14,11 @@ public:
     void decrease_velocity(unsigned long steps);
     unsigned int get_velocity();
     static unsigned int get_maximum_velocity();
-    signed long __cell_index = -1;
+    unsigned long __cell_index;
+    unsigned long __road_id;
+    bool __cell_is_junction;
+    unsigned int get_generation();
+    void increment_generation();
 };
 
 #endif // VEHICLE_H

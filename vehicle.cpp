@@ -3,6 +3,7 @@
 Vehicle::Vehicle(unsigned int velocity)
 {
     this->velocity = velocity;
+    this->generation = 0;
 }
 
 void Vehicle::increment_velocity()
@@ -31,4 +32,14 @@ unsigned int Vehicle::get_velocity()
 unsigned int Vehicle::get_maximum_velocity()
 {
     return MAXIMUM_VELOCITY;
+}
+
+unsigned int Vehicle::get_generation()
+{
+    return this->generation;
+}
+
+void Vehicle::increment_generation()
+{
+    this->generation++;
 }

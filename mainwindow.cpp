@@ -14,12 +14,44 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL * 100);
     ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
 
-    Road *road = new Road(25, Cell::left_to_right);
-    Road *road2 = new Road(25, Cell::bottom_to_top);
-    Road *road3 = new Road(25, Cell::left_to_right);
-    Road *road4 = new Road(25, Cell::top_to_bottom);
-    Road *road5 = new Road(25, Cell::bottom_to_top);
-    Road *road6 = new Road(25, Cell::left_to_right);
+    this->init_network();
+
+    switch(((Road*)this->network->get_roads().front())->get_direction())
+    {
+        case Cell::left_to_right:
+            ui->gfx->setAlignment(Qt::AlignLeft);
+            break;
+        case Cell::right_to_left:
+            ui->gfx->setAlignment(Qt::AlignRight);
+            break;
+        case Cell::top_to_bottom:
+            ui->gfx->setAlignment(Qt::AlignTop);
+            break;
+        case Cell::bottom_to_top:
+            ui->gfx->setAlignment(Qt::AlignBottom);
+            break;
+    }
+
+    draw_network();
+
+    connect(this, SIGNAL(network_updated()), this, SLOT(draw_network()), Qt::QueuedConnection);
+    this->update_thread = new NetworkUpdater(this, this->network);
+    this->update_thread->start();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::init_network()
+{
+    Road *road = new Road(25, Cell::left_to_right, 0);
+    Road *road2 = new Road(25, Cell::bottom_to_top, 1);
+    Road *road3 = new Road(25, Cell::left_to_right, 2);
+    Road *road4 = new Road(25, Cell::top_to_bottom, 3);
+    Road *road5 = new Road(25, Cell::bottom_to_top, 4);
+    Road *road6 = new Road(25, Cell::left_to_right, 5);
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
@@ -35,15 +67,6 @@ MainWindow::MainWindow(QWidget *parent) :
     roads.push_back(road5);
     roads.push_back(road6);
     this->network = new Network(roads);
-
-    connect(this, SIGNAL(network_updated()), this, SLOT(draw_network()), Qt::QueuedConnection);
-    this->update_thread = new NetworkUpdater(this, this->network);
-    this->update_thread->start();
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::draw_network()
@@ -51,6 +74,7 @@ void MainWindow::draw_network()
     this->scene->clear();
     this->process_road(((Road*)this->network->get_roads().front())->get_first_cell(), true, 0, 0);
     this->generation++;
+    this->scene->setSceneRect(this->scene->itemsBoundingRect());
 
     /*// FIXME: debugging - testing cell display gens
     for(vector<Road*>::size_type i = 0; i < this->network->get_roads().size(); i++)

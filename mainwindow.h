@@ -26,6 +26,7 @@ private:
     QGraphicsScene *scene;
     bool updating;
     NetworkUpdater *update_thread;
+    void init_network();
     void process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y);
     void process_cell(Cell *cell, qreal x, qreal y);
 public:

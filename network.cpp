@@ -158,7 +158,7 @@ void Network::process_road(Cell *first_cell, bool forward_processing)
             {
                 Cell *previous_cell = junction->get_previous_cells().at(i);
 
-                if(previous_cell->get_direction() < this->generation)
+                if(previous_cell->get_generation() < this->generation)
                     this->process_road(previous_cell, false);
             }
 
@@ -176,12 +176,14 @@ void Network::process_road(Cell *first_cell, bool forward_processing)
 
 void Network::process_cell(Cell *cell)
 {
-    if(cell->has_vehicle())
+    if(cell->has_vehicle() && cell->get_vehicle()->get_generation() < this->generation)
     {
         Vehicle *vehicle = cell->get_vehicle();
         apply_acceleration(cell, vehicle);
         apply_deceleration(cell, vehicle);
         apply_randomisation(vehicle);
+
+        vehicle->increment_generation();
     }
 
     cell->increment_generation();
@@ -244,7 +246,7 @@ void Network::apply_motion_to_road(Cell *last_cell, bool forward_processing)
         {
             Junction *junction = (Junction*)cell;
 
-            for(unsigned long i = junction->get_next_cells().size(); i-- > 0;)
+            for(vector<Cell*>::size_type i = junction->get_next_cells().size(); i-- > 0;)
             {
                 Cell *next_cell = junction->get_next_cells().at(i);
 
@@ -252,7 +254,7 @@ void Network::apply_motion_to_road(Cell *last_cell, bool forward_processing)
                     this->apply_motion_to_road(next_cell, true);
             }
 
-            for(unsigned long i = junction->get_previous_cells().size(); i-- > 0;)
+            for(vector<Cell*>::size_type i = junction->get_previous_cells().size(); i-- > 0;)
             {
                 Cell *previous_cell = junction->get_previous_cells().at(i);
 
@@ -278,9 +280,10 @@ void Network::apply_motion_to_cell(Cell *cell)
 {
     cell->increment_generation();
 
-    if(cell->has_vehicle())
+    if(cell->has_vehicle() && cell->get_vehicle()->get_generation() < this->generation)
     {
         Vehicle *v = cell->get_vehicle();
+        v->increment_generation();
         unsigned int cells_to_move = v->get_velocity();
 
         if(cells_to_move > 0)

@@ -1,6 +1,6 @@
 #include "road.h"
 
-Road::Road(unsigned long length, Cell::display_direction direction)
+Road::Road(unsigned long length, Cell::display_direction direction, unsigned long __id)
 {
     this->length = length;
     this->direction = direction;
@@ -13,6 +13,9 @@ Road::Road(unsigned long length, Cell::display_direction direction)
         cell->set_speed_limit(this->speed_limit);
         cell->set_direction(direction);
         this->cells.push_back(cell);
+
+        cell->__index = i;
+        cell->__road_id = __id;
     }
 
     // link cells forwards
