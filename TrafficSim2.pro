@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     road.cpp \
     network.cpp \
     junction.cpp \
-    networkupdater.cpp
+    networkupdater.cpp \
+    graphicscellitem.cpp
 
 HEADERS  += mainwindow.h \
     vehicle.h \
@@ -31,6 +32,7 @@ HEADERS  += mainwindow.h \
     road.h \
     network.h \
     junction.h \
-    networkupdater.h
+    networkupdater.h \
+    graphicscellitem.h
 
 FORMS    += mainwindow.ui

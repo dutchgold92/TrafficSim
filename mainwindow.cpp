@@ -88,22 +88,6 @@ void MainWindow::draw_network()
     this->process_road(((Road*)this->network->get_roads().front())->get_first_cell(), true, 0, 0);
     this->generation++;
     this->scene->setSceneRect(this->scene->itemsBoundingRect());
-
-    /*// FIXME: debugging - testing cell display gens
-    for(vector<Road*>::size_type i = 0; i < this->network->get_roads().size(); i++)
-        for(unsigned long x = 0; x < this->network->get_roads().at(i)->get_length(); x++)
-            cout << this->network->get_roads().at(i)->get_cell(x)->get_display_generation() << ",";
-    cout << endl;*/
-
-    /*for(int i = 0; i < 25; i++)
-    {
-        if(this->network->get_roads().at(3)->get_cell(i)->has_vehicle())
-            cout << this->network->get_roads().at(3)->get_cell(i)->get_vehicle()->get_velocity();
-        else
-            cout << ".";
-    }
-
-    cout << endl;*/
 }
 
 void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y)
@@ -227,17 +211,7 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
 
 void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
 {
-    QGraphicsRectItem *display_cell = new QGraphicsRectItem(x, y, DISPLAY_CELL_SIZE, DISPLAY_CELL_SIZE);
-
-    if(cell->has_vehicle())
-        display_cell->setBrush(QBrush(Qt::blue));
-    else
-        display_cell->setBrush(QBrush(Qt::black));
-
-    if(cell->is_junction())
-        display_cell->setPen(QPen(Qt::red));
-
-    scene->addItem(display_cell);
+    scene->addItem(new GraphicsCellItem(cell, x, y, DISPLAY_CELL_SIZE, DISPLAY_CELL_SIZE));
     cell->increment_display_generation();
 }
 
