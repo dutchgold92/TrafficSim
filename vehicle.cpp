@@ -43,3 +43,8 @@ void Vehicle::increment_generation()
 {
     this->generation++;
 }
+
+void Vehicle::set_generation(unsigned long generation)
+{
+    this->generation = generation;
+}

@@ -100,12 +100,6 @@ void Network::step()
 {
     this->synthesize_traffic();
     this->process();
-
-    /*// FIXME: debugging - testing cell gens
-    for(vector<Road*>::size_type i = 0; i < this->roads.size(); i++)
-        for(unsigned long x = 0; x < this->roads.at(i)->get_length(); x++)
-            cout << this->roads.at(i)->get_cell(x)->get_generation() << ",";
-    cout << endl;*/
 }
 
 void Network::synthesize_traffic()
@@ -118,7 +112,11 @@ void Network::synthesize_traffic()
         Cell *cell = ((Road*)*it)->get_first_cell();
 
         if(!cell->has_vehicle())
-            cell->set_vehicle(new Vehicle(Vehicle::get_maximum_velocity() / 2));
+        {
+            Vehicle *v = new Vehicle(Vehicle::get_maximum_velocity() / 2);
+            v->set_generation(this->generation);
+            cell->set_vehicle(v);
+        }
     }
 }
 

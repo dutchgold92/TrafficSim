@@ -19,6 +19,7 @@ public:
     bool __cell_is_junction;
     unsigned int get_generation();
     void increment_generation();
+    void set_generation(unsigned long generation);
 };
 
 #endif // VEHICLE_H

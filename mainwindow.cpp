@@ -52,6 +52,9 @@ void MainWindow::init_network()
     Road *road4 = new Road(25, Cell::top_to_bottom, 3);
     Road *road5 = new Road(25, Cell::bottom_to_top, 4);
     Road *road6 = new Road(25, Cell::left_to_right, 5);
+    Road *road7 = new Road(25, Cell::left_to_right, 6);
+    Road *road8 = new Road(25, Cell::top_to_bottom, 7);
+    Road *road9 = new Road(25, Cell::left_to_right, 8);
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
@@ -59,6 +62,13 @@ void MainWindow::init_network()
     junction2->connect_roads(road3, road4);
     junction2->connect_roads(road3, road5);
     junction2->connect_roads(road3, road6);
+    Junction *junction3 = new Junction();
+    junction3->connect_roads(road5, road7);
+    Junction *junction4 = new Junction();
+    junction4->connect_roads(road7, road8);
+    Junction *junction5 = new Junction();
+    junction5->connect_roads(road6, road9);
+    junction5->connect_roads(road8, road9);
     vector<Road*> roads;
     roads.push_back(road);
     roads.push_back(road2);
@@ -66,6 +76,9 @@ void MainWindow::init_network()
     roads.push_back(road4);
     roads.push_back(road5);
     roads.push_back(road6);
+    roads.push_back(road7);
+    roads.push_back(road8);
+    roads.push_back(road9);
     this->network = new Network(roads);
 }
 
