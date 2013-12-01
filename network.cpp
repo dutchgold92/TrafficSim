@@ -13,8 +13,8 @@ Network::Network(vector<Road*> roads)
 void Network::init()
 {
     this->init_traffic();
-    this->identify_orphan_roads();
-    this->identify_exit_roads();
+    this->identify_input_roads();
+    this->identify_output_roads();
     this->identify_junctions();
 }
 
@@ -40,18 +40,18 @@ void Network::init_traffic()
     }
 }
 
-void Network::identify_orphan_roads()
+void Network::identify_input_roads()
 {
     for(vector<Road*>::iterator it = this->roads.begin(); it != this->roads.end(); ++it)
         if(!((Road*)*it)->get_first_cell()->has_previous_cell())
-            this->orphan_roads.push_back((Road*)*it);
+            this->input_roads.push_back((Road*)*it);
 }
 
-void Network::identify_exit_roads()
+void Network::identify_output_roads()
 {
     for(vector<Road*>::reverse_iterator it = this->roads.rbegin(); it != this->roads.rend(); ++it)
         if(!((Road*)*it)->get_last_cell()->has_next_cell())
-            this->exit_roads.push_back((Road*)*it);
+            this->output_roads.push_back((Road*)*it);
 }
 
 void Network::identify_junctions()
@@ -107,7 +107,7 @@ void Network::synthesize_traffic()
     //FIXME: debugging
     //cout << this->get_actual_input_density() << " / " << this->desired_input_density << endl;
 
-    for(vector<Road*>::iterator it = this->orphan_roads.begin(); (it != this->orphan_roads.end()) && (this->get_actual_input_density() <= this->get_desired_input_density()); ++it)
+    for(vector<Road*>::iterator it = this->input_roads.begin(); (it != this->input_roads.end()) && (this->get_actual_input_density() <= this->get_desired_input_density()); ++it)
     {
         Cell *cell = ((Road*)*it)->get_first_cell();
 
@@ -212,9 +212,9 @@ void Network::apply_deceleration(Cell *cell, Vehicle *vehicle)
 
             junction = cell_before_junction->get_next_cell(cell_before_junction);
 
-            /*if(!((Junction*)junction)->is_accessible_from_road(cell_before_junction))
+            if(!((Junction*)junction)->is_accessible_from_road(cell_before_junction))
                 vehicle->decrease_velocity(distance_to_junction);
-            else*/
+            else
                 vehicle->decrease_velocity(distance_to_junction + 1);
         }
 
@@ -350,7 +350,7 @@ float Network::get_actual_input_density()
     float vehicles = 0;
     float cells = 0;
 
-    for(vector<Road*>::iterator it = this->orphan_roads.begin(); it != this->orphan_roads.end(); ++it)
+    for(vector<Road*>::iterator it = this->input_roads.begin(); it != this->input_roads.end(); ++it)
     {
         for(unsigned long i = 0; i < ((Road*)*it)->get_length(); i++)
         {
@@ -375,7 +375,7 @@ float Network::get_overall_density()
     return (densities / roads);
 }
 
-vector<Road*> Network::get_orphan_roads()
+vector<Road*> Network::get_input_roads()
 {
-    return this->orphan_roads;
+    return this->input_roads;
 }

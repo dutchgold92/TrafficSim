@@ -6,9 +6,15 @@ GraphicsCellItem::GraphicsCellItem(Cell *cell, qreal x, qreal y, qreal width, qr
     this->cell = cell;
 
     if(this->has_vehicle())
+    {
         this->setBrush(QBrush(Qt::blue));
+        this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    }
     else
+    {
         this->setBrush(QBrush(Qt::black));
+        this->setFlag(QGraphicsItem::ItemIsSelectable, false);
+    }
 
     if(this->is_junction())
             this->setPen(QPen(Qt::red));

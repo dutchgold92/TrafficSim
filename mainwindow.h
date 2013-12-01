@@ -20,15 +20,15 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
+    void init_network();
+    void process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y);
+    void process_cell(Cell *cell, qreal x, qreal y);
     unsigned long generation;
     Ui::MainWindow *ui;
     Network *network;
     QGraphicsScene *scene;
     bool updating;
     NetworkUpdater *update_thread;
-    void init_network();
-    void process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y);
-    void process_cell(Cell *cell, qreal x, qreal y);
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -37,6 +37,7 @@ private slots:
     void on_updateButton_pressed();
     void on_playPauseButton_pressed();
     void on_stepButton_pressed();
+    void scene_selection();
 signals:
     void network_updated();
 };

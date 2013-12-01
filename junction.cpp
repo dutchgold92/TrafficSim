@@ -96,14 +96,17 @@ void Junction::toggle_active_incoming_road()
 
     if(this->get_previous_cells().size() > 1)
     {
-        for(unsigned int i = 0; i < this->get_previous_cells().size(); i++)
+        if(this->active_incoming_road == this->previous_cells.back())
+            this->active_incoming_road = this->previous_cells.front();
+        else
         {
-            if(this->active_incoming_road == this->get_previous_cells().at(i))
+            for(vector<Cell*>::size_type i = 0; i < this->previous_cells.size(); i++)
             {
-                if(i == (this->get_previous_cells().size() - 1))
-                    this->active_incoming_road = this->get_previous_cells().front();
-                else
-                    this->active_incoming_road = this->get_previous_cells().at(i + 1);
+                if(this->active_incoming_road == this->previous_cells.at(i))
+                {
+                    this->active_incoming_road = this->previous_cells.at(i + 1);
+                    return;
+                }
             }
         }
     }

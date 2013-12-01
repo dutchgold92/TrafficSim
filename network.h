@@ -19,14 +19,14 @@ class Network
 private:
     unsigned long generation;
     vector<Road*> roads;
-    vector<Road*> orphan_roads;
-    vector<Road*> exit_roads;
+    vector<Road*> input_roads;
+    vector<Road*> output_roads;
     vector<Junction*> junctions;
     float desired_input_density;
     void init();
     void init_traffic();
-    void identify_orphan_roads();
-    void identify_exit_roads();
+    void identify_input_roads();
+    void identify_output_roads();
     void identify_junctions();
     bool is_known_junction(Junction *junction);
     void process();
@@ -50,8 +50,7 @@ public:
     float get_desired_input_density();
     float get_actual_input_density();
     float get_overall_density();
-    vector<Road*> get_orphan_roads();
-    Vehicle *__vehicle;
+    vector<Road*> get_input_roads();
 };
 
 #endif // NETWORK_H

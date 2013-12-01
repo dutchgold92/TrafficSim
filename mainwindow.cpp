@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
     draw_network();
 
     connect(this, SIGNAL(network_updated()), this, SLOT(draw_network()), Qt::QueuedConnection);
+    connect(this->scene, SIGNAL(selectionChanged()), this, SLOT(scene_selection()), Qt::QueuedConnection);
     this->update_thread = new NetworkUpdater(this, this->network);
     this->update_thread->start();
 }
@@ -243,4 +244,9 @@ void MainWindow::on_stepButton_pressed()
 {
     this->network->step();
     emit(network_updated());
+}
+
+void MainWindow::scene_selection()
+{
+    QGraphicsItem *selected = this->scene->selectedItems().back();
 }
