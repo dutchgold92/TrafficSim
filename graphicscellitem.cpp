@@ -12,12 +12,13 @@ GraphicsCellItem::GraphicsCellItem(Cell *cell, qreal x, qreal y, qreal width, qr
     }
     else
     {
-        this->setBrush(QBrush(Qt::black));
+        if(this->is_junction())
+            this->setBrush(QBrush(Qt::red));
+        else
+            this->setBrush(QBrush(Qt::black));
+
         this->setFlag(QGraphicsItem::ItemIsSelectable, false);
     }
-
-    if(this->is_junction())
-            this->setPen(QPen(Qt::red));
 }
 
 bool GraphicsCellItem::is_junction()
@@ -28,4 +29,22 @@ bool GraphicsCellItem::is_junction()
 bool GraphicsCellItem::has_vehicle()
 {
     return(this->cell->has_vehicle());
+}
+
+Vehicle *GraphicsCellItem::get_vehicle()
+{
+    return(this->cell->get_vehicle());
+}
+
+void GraphicsCellItem::setSelected(bool selected)
+{
+    if(selected)
+        this->setBrush(QBrush(Qt::green));
+    else
+        this->setBrush(QBrush(Qt::blue));
+}
+
+GraphicsCellItem* qgraphicsitem_cast(QGraphicsItem *item)
+{
+    return (GraphicsCellItem*)item;
 }

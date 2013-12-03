@@ -23,12 +23,15 @@ private:
     void init_network();
     void process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y);
     void process_cell(Cell *cell, qreal x, qreal y);
+    void follow_vehicle();
     unsigned long generation;
     Ui::MainWindow *ui;
     Network *network;
     QGraphicsScene *scene;
     bool updating;
     NetworkUpdater *update_thread;
+    bool following_vehicle;
+    Vehicle *vehicle_to_follow;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();

@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->updating = true;
     this->generation = 0;
     this->scene = new QGraphicsScene(0, 0, ui->gfx->frameSize().width(), ui->gfx->frameSize().height());
+    this->following_vehicle = false;
+    this->vehicle_to_follow = 0;
     ui->gfx->setScene(scene);
     ui->gfx->show();
     ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL * 100);
@@ -51,11 +53,14 @@ void MainWindow::init_network()
     Road *road2 = new Road(25, Cell::bottom_to_top, 1);
     Road *road3 = new Road(25, Cell::left_to_right, 2);
     Road *road4 = new Road(25, Cell::top_to_bottom, 3);
-    Road *road5 = new Road(25, Cell::bottom_to_top, 4);
+    Road *road5 = new Road(5, Cell::bottom_to_top, 4);
     Road *road6 = new Road(25, Cell::left_to_right, 5);
     Road *road7 = new Road(25, Cell::left_to_right, 6);
-    Road *road8 = new Road(25, Cell::top_to_bottom, 7);
+    Road *road8 = new Road(5, Cell::top_to_bottom, 7);
     Road *road9 = new Road(25, Cell::left_to_right, 8);
+    Road *road10 = new Road(25, Cell::top_to_bottom, 9);
+    Road *road11 = new Road(25, Cell::right_to_left, 10);
+    Road *road12 = new Road(10, Cell::top_to_bottom, 11);
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
@@ -70,6 +75,14 @@ void MainWindow::init_network()
     Junction *junction5 = new Junction();
     junction5->connect_roads(road6, road9);
     junction5->connect_roads(road8, road9);
+    junction5->connect_roads(road6, road10);
+    junction5->connect_roads(road8, road10);
+    Junction *junction6 = new Junction();
+    junction6->connect_roads(road10, road11);
+    Junction *junction7 = new Junction();
+    junction7->connect_roads(road11, road12);
+    junction7->connect_roads(road4, road12);
+
     vector<Road*> roads;
     roads.push_back(road);
     roads.push_back(road2);
@@ -80,6 +93,8 @@ void MainWindow::init_network()
     roads.push_back(road7);
     roads.push_back(road8);
     roads.push_back(road9);
+    roads.push_back(road10);
+    roads.push_back(road11);
     this->network = new Network(roads);
 }
 
@@ -89,6 +104,9 @@ void MainWindow::draw_network()
     this->process_road(((Road*)this->network->get_roads().front())->get_first_cell(), true, 0, 0);
     this->generation++;
     this->scene->setSceneRect(this->scene->itemsBoundingRect());
+
+    if(this->following_vehicle)
+        this->follow_vehicle();
 }
 
 void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y)
@@ -246,7 +264,35 @@ void MainWindow::on_stepButton_pressed()
     emit(network_updated());
 }
 
+void MainWindow::follow_vehicle()
+{
+    for(QList<QGraphicsItem*>::size_type i = 0; i < this->scene->items().size(); i++)
+    {
+        GraphicsCellItem *cell = ((GraphicsCellItem*)this->scene->items().at(i));
+
+        if(cell->has_vehicle())
+        {
+            if(cell->get_vehicle() == this->vehicle_to_follow)
+            {
+                cell->setSelected(true);
+                return;
+            }
+        }
+    }
+
+    this->following_vehicle = false;
+    this->vehicle_to_follow = 0;
+}
+
 void MainWindow::scene_selection()
 {
-    QGraphicsItem *selected = this->scene->selectedItems().back();
+    if(this->scene->selectedItems().isEmpty())
+        return;
+    else
+    {
+        GraphicsCellItem *selected = qgraphicsitem_cast<GraphicsCellItem*>(this->scene->selectedItems().back());
+        selected->setSelected(true);
+        this->vehicle_to_follow = selected->get_vehicle();
+        this->following_vehicle = true;
+    }
 }
