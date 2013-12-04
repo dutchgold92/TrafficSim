@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->updating = true;
     this->generation = 0;
     this->scene = new QGraphicsScene(0, 0, ui->gfx->frameSize().width(), ui->gfx->frameSize().height());
+    this->scene->setBackgroundBrush(QBrush(Qt::black));
     this->following_vehicle = false;
     this->vehicle_to_follow = 0;
     ui->gfx->setScene(scene);
@@ -95,6 +96,7 @@ void MainWindow::init_network()
     roads.push_back(road9);
     roads.push_back(road10);
     roads.push_back(road11);
+    roads.push_back(road12);
     this->network = new Network(roads);
 }
 
@@ -232,6 +234,40 @@ void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
 {
     scene->addItem(new GraphicsCellItem(cell, x, y, DISPLAY_CELL_SIZE, DISPLAY_CELL_SIZE));
     cell->increment_display_generation();
+
+    if(!cell->is_junction())
+    {
+        qreal arrow_x = x;
+        qreal arrow_y = y;
+        QString arrow_text;
+
+        switch(cell->get_direction())
+        {
+            case Cell::left_to_right:
+                arrow_y += DISPLAY_CELL_SIZE;
+                arrow_text = ">";
+                break;
+            case Cell::right_to_left:
+                arrow_y += DISPLAY_CELL_SIZE;
+                arrow_text = "<";
+                break;
+            case Cell::top_to_bottom:
+                arrow_x += DISPLAY_CELL_SIZE;
+                arrow_text = "v";
+                break;
+            case Cell::bottom_to_top:
+                arrow_x += DISPLAY_CELL_SIZE;
+                arrow_text = "^";
+                break;
+        }
+
+        QGraphicsSimpleTextItem *arrow = new QGraphicsSimpleTextItem(0, this->scene);
+        arrow->setBrush(QBrush(Qt::white));
+        arrow->setText(arrow_text);
+        arrow->setX(arrow_x);
+        arrow->setY(arrow_y);
+        scene->addItem(arrow);
+    }
 }
 
 void MainWindow::on_updateButton_pressed()

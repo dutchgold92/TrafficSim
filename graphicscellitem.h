@@ -12,6 +12,9 @@ class GraphicsCellItem : public QObject, public QGraphicsRectItem
     Q_OBJECT
 private:
     Cell *cell;
+    QBrush vehicle_brush();
+    QBrush focused_vehicle_brush();
+    QBrush empty_cell_brush();
 public:
     explicit GraphicsCellItem(Cell *cell, qreal x, qreal y, qreal width, qreal height);
     enum {Type = UserType + 1};
@@ -22,11 +25,7 @@ public:
     int type() const
     {
         return Type;
-    }
-signals:
-    
-public slots:
-    
+    }    
 };
 
 #endif // GRAPHICSCELLITEM_H

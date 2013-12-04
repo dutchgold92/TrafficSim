@@ -7,16 +7,12 @@ GraphicsCellItem::GraphicsCellItem(Cell *cell, qreal x, qreal y, qreal width, qr
 
     if(this->has_vehicle())
     {
-        this->setBrush(QBrush(Qt::blue));
+        this->setBrush(this->vehicle_brush());
         this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
     else
     {
-        if(this->is_junction())
-            this->setBrush(QBrush(Qt::red));
-        else
-            this->setBrush(QBrush(Qt::black));
-
+        this->setBrush(this->empty_cell_brush());
         this->setFlag(QGraphicsItem::ItemIsSelectable, false);
     }
 }
@@ -38,10 +34,28 @@ Vehicle *GraphicsCellItem::get_vehicle()
 
 void GraphicsCellItem::setSelected(bool selected)
 {
-    if(selected)
-        this->setBrush(QBrush(Qt::green));
-    else
-        this->setBrush(QBrush(Qt::blue));
+    if(cell->has_vehicle())
+    {
+        if(selected)
+            this->setBrush(this->focused_vehicle_brush());
+        else
+            this->setBrush(this->vehicle_brush());
+    }
+}
+
+QBrush GraphicsCellItem::vehicle_brush()
+{
+    return QBrush(Qt::green);
+}
+
+QBrush GraphicsCellItem::focused_vehicle_brush()
+{
+    return QBrush(Qt::red);
+}
+
+QBrush GraphicsCellItem::empty_cell_brush()
+{
+    return QBrush(Qt::white);
 }
 
 GraphicsCellItem* qgraphicsitem_cast(QGraphicsItem *item)

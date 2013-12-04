@@ -6,6 +6,7 @@
 #include <networkupdater.h>
 #include <QGraphicsScene>
 #include <graphicscellitem.h>
+#include <QGraphicsSimpleTextItem>
 #include <QBrush>
 #include <QtConcurrentRun>
 #include <unistd.h>

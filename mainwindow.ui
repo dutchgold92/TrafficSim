@@ -96,7 +96,7 @@
     <item>
      <widget class="QGraphicsView" name="gfx">
       <property name="styleSheet">
-       <string notr="true">background: #ffffff;</string>
+       <string notr="true"/>
       </property>
       <property name="sceneRect">
        <rectf>
