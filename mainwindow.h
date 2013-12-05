@@ -11,7 +11,7 @@
 #include <QtConcurrentRun>
 #include <unistd.h>
 
-#define DISPLAY_CELL_SIZE 10
+#define DEFAULT_CELL_SIZE 10
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +33,8 @@ private:
     NetworkUpdater *update_thread;
     bool following_vehicle;
     Vehicle *vehicle_to_follow;
+    qreal cell_size;
+    bool show_road_directions;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -42,6 +44,10 @@ private slots:
     void on_playPauseButton_pressed();
     void on_stepButton_pressed();
     void scene_selection();
+    void on_displayScaleInput_valueChanged(int value);
+
+    void on_showRoadDirectionsInput_toggled(bool checked);
+
 signals:
     void network_updated();
 };

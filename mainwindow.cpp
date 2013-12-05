@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->updating = true;
     this->generation = 0;
+    this->cell_size = DEFAULT_CELL_SIZE;
+    this->show_road_directions = false;
     this->scene = new QGraphicsScene(0, 0, ui->gfx->frameSize().width(), ui->gfx->frameSize().height());
     this->scene->setBackgroundBrush(QBrush(Qt::black));
     this->following_vehicle = false;
@@ -16,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gfx->show();
     ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL * 100);
     ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
+    ui->displayScaleInput->setValue(DEFAULT_CELL_SIZE);
 
     this->init_network();
 
@@ -135,16 +138,16 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
                     switch(direction)
                     {
                         case Cell::left_to_right:
-                            this->process_road(next_cell, true, (x + DISPLAY_CELL_SIZE), y);
+                            this->process_road(next_cell, true, (x + this->cell_size), y);
                             break;
                         case Cell::right_to_left:
-                            this->process_road(next_cell, true, (x - DISPLAY_CELL_SIZE), y);
+                            this->process_road(next_cell, true, (x - this->cell_size), y);
                             break;
                         case Cell::top_to_bottom:
-                            this->process_road(next_cell, true, x, (y + DISPLAY_CELL_SIZE));
+                            this->process_road(next_cell, true, x, (y + this->cell_size));
                             break;
                         case Cell::bottom_to_top:
-                            this->process_road(next_cell, true, x, (y - DISPLAY_CELL_SIZE));
+                            this->process_road(next_cell, true, x, (y - this->cell_size));
                             break;
                     }
                 }
@@ -161,16 +164,16 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
                     switch(direction)
                     {
                         case Cell::left_to_right:
-                            this->process_road(previous_cell, false, (x - DISPLAY_CELL_SIZE), y);
+                            this->process_road(previous_cell, false, (x - this->cell_size), y);
                             break;
                         case Cell::right_to_left:
-                            this->process_road(previous_cell, false, (x + DISPLAY_CELL_SIZE), y);
+                            this->process_road(previous_cell, false, (x + this->cell_size), y);
                             break;
                         case Cell::top_to_bottom:
-                            this->process_road(previous_cell, false, x, (y - DISPLAY_CELL_SIZE));
+                            this->process_road(previous_cell, false, x, (y - this->cell_size));
                             break;
                         case Cell::bottom_to_top:
-                            this->process_road(previous_cell, false, x, (y + DISPLAY_CELL_SIZE));
+                            this->process_road(previous_cell, false, x, (y + this->cell_size));
                             break;
                     }
                 }
@@ -187,16 +190,16 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
                 switch(direction)
                 {
                     case Cell::left_to_right:
-                        x += DISPLAY_CELL_SIZE;
+                        x += this->cell_size;
                         break;
                     case Cell::right_to_left:
-                        x -= DISPLAY_CELL_SIZE;
+                        x -= this->cell_size;
                         break;
                     case Cell::top_to_bottom:
-                        y += DISPLAY_CELL_SIZE;
+                        y += this->cell_size;
                         break;
                     case Cell::bottom_to_top:
-                        y -= DISPLAY_CELL_SIZE;
+                        y -= this->cell_size;
                         break;
                 }
 
@@ -209,16 +212,16 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
                 switch(direction)
                 {
                     case Cell::left_to_right:
-                        x -= DISPLAY_CELL_SIZE;
+                        x -= this->cell_size;
                         break;
                     case Cell::right_to_left:
-                        x += DISPLAY_CELL_SIZE;
+                        x += this->cell_size;
                         break;
                     case Cell::top_to_bottom:
-                        y -= DISPLAY_CELL_SIZE;
+                        y -= this->cell_size;
                         break;
                     case Cell::bottom_to_top:
-                        y += DISPLAY_CELL_SIZE;
+                        y += this->cell_size;
                         break;
                 }
 
@@ -232,41 +235,44 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
 
 void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
 {
-    scene->addItem(new GraphicsCellItem(cell, x, y, DISPLAY_CELL_SIZE, DISPLAY_CELL_SIZE));
+    scene->addItem(new GraphicsCellItem(cell, x, y, this->cell_size, this->cell_size));
     cell->increment_display_generation();
 
-    if(!cell->is_junction())
+    if(this->show_road_directions)
     {
-        qreal arrow_x = x;
-        qreal arrow_y = y;
-        QString arrow_text;
-
-        switch(cell->get_direction())
+        if(!cell->is_junction())
         {
-            case Cell::left_to_right:
-                arrow_y += DISPLAY_CELL_SIZE;
-                arrow_text = ">";
-                break;
-            case Cell::right_to_left:
-                arrow_y += DISPLAY_CELL_SIZE;
-                arrow_text = "<";
-                break;
-            case Cell::top_to_bottom:
-                arrow_x += DISPLAY_CELL_SIZE;
-                arrow_text = "v";
-                break;
-            case Cell::bottom_to_top:
-                arrow_x += DISPLAY_CELL_SIZE;
-                arrow_text = "^";
-                break;
-        }
+            qreal arrow_x = x;
+            qreal arrow_y = y;
+            QString arrow_text;
 
-        QGraphicsSimpleTextItem *arrow = new QGraphicsSimpleTextItem(0, this->scene);
-        arrow->setBrush(QBrush(Qt::white));
-        arrow->setText(arrow_text);
-        arrow->setX(arrow_x);
-        arrow->setY(arrow_y);
-        scene->addItem(arrow);
+            switch(cell->get_direction())
+            {
+                case Cell::left_to_right:
+                    arrow_y += this->cell_size;
+                    arrow_text = ">";
+                    break;
+                case Cell::right_to_left:
+                    arrow_y += this->cell_size;
+                    arrow_text = "<";
+                    break;
+                case Cell::top_to_bottom:
+                    arrow_x += this->cell_size;
+                    arrow_text = "v";
+                    break;
+                case Cell::bottom_to_top:
+                    arrow_x += this->cell_size;
+                    arrow_text = "^";
+                    break;
+            }
+
+            QGraphicsSimpleTextItem *arrow = new QGraphicsSimpleTextItem(0, this->scene);
+            arrow->setBrush(QBrush(Qt::white));
+            arrow->setText(arrow_text);
+            arrow->setX(arrow_x);
+            arrow->setY(arrow_y);
+            scene->addItem(arrow);
+        }
     }
 }
 
@@ -331,4 +337,14 @@ void MainWindow::scene_selection()
         this->vehicle_to_follow = selected->get_vehicle();
         this->following_vehicle = true;
     }
+}
+
+void MainWindow::on_displayScaleInput_valueChanged(int value)
+{
+    this->cell_size = value;
+}
+
+void MainWindow::on_showRoadDirectionsInput_toggled(bool checked)
+{
+    this->show_road_directions = checked;
 }
