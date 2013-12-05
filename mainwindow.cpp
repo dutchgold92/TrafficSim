@@ -238,42 +238,42 @@ void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
     scene->addItem(new GraphicsCellItem(cell, x, y, this->cell_size, this->cell_size));
     cell->increment_display_generation();
 
-    if(this->show_road_directions)
+    if(this->show_road_directions && !cell->is_junction())
+        this->draw_directional_arrow(x, y, cell->get_direction());
+}
+
+void MainWindow::draw_directional_arrow(qreal x, qreal y, Cell::display_direction direction)
+{
+    qreal arrow_x = x;
+    qreal arrow_y = y;
+    QString arrow_text;
+
+    switch(direction)
     {
-        if(!cell->is_junction())
-        {
-            qreal arrow_x = x;
-            qreal arrow_y = y;
-            QString arrow_text;
-
-            switch(cell->get_direction())
-            {
-                case Cell::left_to_right:
-                    arrow_y += this->cell_size;
-                    arrow_text = ">";
-                    break;
-                case Cell::right_to_left:
-                    arrow_y += this->cell_size;
-                    arrow_text = "<";
-                    break;
-                case Cell::top_to_bottom:
-                    arrow_x += this->cell_size;
-                    arrow_text = "v";
-                    break;
-                case Cell::bottom_to_top:
-                    arrow_x += this->cell_size;
-                    arrow_text = "^";
-                    break;
-            }
-
-            QGraphicsSimpleTextItem *arrow = new QGraphicsSimpleTextItem(0, this->scene);
-            arrow->setBrush(QBrush(Qt::white));
-            arrow->setText(arrow_text);
-            arrow->setX(arrow_x);
-            arrow->setY(arrow_y);
-            scene->addItem(arrow);
-        }
+        case Cell::left_to_right:
+            arrow_y += this->cell_size;
+            arrow_text = ">";
+            break;
+        case Cell::right_to_left:
+            arrow_y += this->cell_size;
+            arrow_text = "<";
+            break;
+        case Cell::top_to_bottom:
+            arrow_x += this->cell_size;
+            arrow_text = "v";
+            break;
+        case Cell::bottom_to_top:
+            arrow_x += this->cell_size;
+            arrow_text = "^";
+            break;
     }
+
+    QGraphicsSimpleTextItem *arrow = new QGraphicsSimpleTextItem(0, this->scene);
+    arrow->setBrush(QBrush(Qt::white));
+    arrow->setText(arrow_text);
+    arrow->setX(arrow_x);
+    arrow->setY(arrow_y);
+    scene->addItem(arrow);
 }
 
 void MainWindow::on_updateButton_pressed()

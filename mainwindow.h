@@ -25,6 +25,7 @@ private:
     void process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y);
     void process_cell(Cell *cell, qreal x, qreal y);
     void follow_vehicle();
+    void draw_directional_arrow(qreal x, qreal y, Cell::display_direction direction);
     unsigned long generation;
     Ui::MainWindow *ui;
     Network *network;
