@@ -20,7 +20,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
     ui->displayScaleInput->setValue(DEFAULT_CELL_SIZE);
 
+    QString updateValueString;
+    updateValueString.append("(");
+    updateValueString.append(QString::number(DEFAULT_UPDATE_INTERVAL));
+    updateValueString.append(" ms)");
+    ui->updateIntervalValueLabel->setText(updateValueString);
+
+    QString densityValueString;
+    densityValueString.append("(");
+    densityValueString.append(QString::number(DEFAULT_INITIAL_DENSITY));
+    densityValueString.append(")");
+    ui->densityInputValueLabel->setText(densityValueString);
+
     this->init_network();
+
+    assert(this->network->get_roads().size() > 0);
 
     switch(((Road*)this->network->get_roads().front())->get_direction())
     {
@@ -53,18 +67,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::init_network()
 {
-    Road *road = new Road(25, Cell::left_to_right, 0);
-    Road *road2 = new Road(25, Cell::bottom_to_top, 1);
-    Road *road3 = new Road(25, Cell::left_to_right, 2);
-    Road *road4 = new Road(25, Cell::top_to_bottom, 3);
-    Road *road5 = new Road(5, Cell::bottom_to_top, 4);
-    Road *road6 = new Road(25, Cell::left_to_right, 5);
-    Road *road7 = new Road(25, Cell::left_to_right, 6);
-    Road *road8 = new Road(5, Cell::top_to_bottom, 7);
-    Road *road9 = new Road(25, Cell::left_to_right, 8);
-    Road *road10 = new Road(25, Cell::top_to_bottom, 9);
-    Road *road11 = new Road(25, Cell::right_to_left, 10);
-    Road *road12 = new Road(10, Cell::top_to_bottom, 11);
+    // -- Init complex network
+    Road *road = new Road(25, Cell::left_to_right);
+    Road *road2 = new Road(25, Cell::bottom_to_top);
+    Road *road3 = new Road(25, Cell::left_to_right);
+    Road *road4 = new Road(25, Cell::top_to_bottom);
+    Road *road5 = new Road(5, Cell::bottom_to_top);
+    Road *road6 = new Road(25, Cell::left_to_right);
+    Road *road7 = new Road(25, Cell::left_to_right);
+    Road *road8 = new Road(5, Cell::top_to_bottom);
+    Road *road9 = new Road(25, Cell::left_to_right);
+    Road *road10 = new Road(25, Cell::top_to_bottom);
+    Road *road11 = new Road(25, Cell::right_to_left);
+    Road *road12 = new Road(10, Cell::top_to_bottom);
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
@@ -101,6 +116,38 @@ void MainWindow::init_network()
     roads.push_back(road11);
     roads.push_back(road12);
     this->network = new Network(roads);
+
+    // -- Init single road network
+    /*
+    Road *road1 = new Road(1000, Cell::left_to_right);
+    vector<Road*> roads;
+    roads.push_back(road1);
+    this->network = new Network(roads);
+    */
+
+    // -- Init loop network
+    /*
+    Road *road1 = new Road(50, Cell::left_to_right);
+    Road *road2 = new Road(25, Cell::top_to_bottom);
+    Road *road3 = new Road(50, Cell::right_to_left);
+    Road *road4 = new Road(25, Cell::bottom_to_top);
+
+    Junction *j1 = new Junction();
+    j1->connect_roads(road1, road2);
+    Junction *j2 = new Junction();
+    j2->connect_roads(road2, road3);
+    Junction *j3 = new Junction();
+    j3->connect_roads(road3, road4);
+    Junction *j4 = new Junction();
+    j4->connect_roads(road4, road1);
+
+    vector<Road*> roads;
+    roads.push_back(road1);
+    roads.push_back(road2);
+    roads.push_back(road3);
+    roads.push_back(road4);
+    this->network = new Network(roads);
+    */
 }
 
 void MainWindow::draw_network()
@@ -347,4 +394,22 @@ void MainWindow::on_displayScaleInput_valueChanged(int value)
 void MainWindow::on_showRoadDirectionsInput_toggled(bool checked)
 {
     this->show_road_directions = checked;
+}
+
+void MainWindow::on_updateIntervalInput_valueChanged(int value)
+{
+    QString string;
+    string.append("(");
+    string.append(QString::number(value));
+    string.append(" ms)");
+    ui->updateIntervalValueLabel->setText(string);
+}
+
+void MainWindow::on_densityInput_valueChanged(int value)
+{
+    QString string;
+    string.append("(");
+    string.append(QString::number(float(value) / 100));
+    string.append(")");
+    ui->densityInputValueLabel->setText(string);
 }

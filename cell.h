@@ -30,8 +30,6 @@ public:
     unsigned int get_speed_limit();
     void set_direction(display_direction direction);
     display_direction get_direction();
-    unsigned long __index;
-    unsigned long __road_id;
 private:
     unsigned long generation;
     unsigned long display_generation;

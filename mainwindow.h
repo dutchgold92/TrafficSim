@@ -10,6 +10,7 @@
 #include <QBrush>
 #include <QtConcurrentRun>
 #include <unistd.h>
+#include <assert.h>
 
 #define DEFAULT_CELL_SIZE 10
 
@@ -46,9 +47,9 @@ private slots:
     void on_stepButton_pressed();
     void scene_selection();
     void on_displayScaleInput_valueChanged(int value);
-
     void on_showRoadDirectionsInput_toggled(bool checked);
-
+    void on_updateIntervalInput_valueChanged(int value);
+    void on_densityInput_valueChanged(int value);
 signals:
     void network_updated();
 };

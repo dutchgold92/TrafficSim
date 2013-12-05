@@ -8,7 +8,7 @@
 class Road
 {
 public:
-    Road(unsigned long length, Cell::display_direction direction, unsigned long __id);
+    Road(unsigned long length, Cell::display_direction direction);
     unsigned long get_length();
     void append_cell(Cell* cell);
     Cell* get_cell(unsigned int index);
