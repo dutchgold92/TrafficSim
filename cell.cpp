@@ -4,11 +4,22 @@ using namespace std;
 
 Cell::Cell()
 {
+    this->middle_cell = false;
     this->generation = 0;
     this->display_generation = 0;
     this->vehicle = 0;
     this->next_cell = 0;
     this->previous_cell = 0;
+}
+
+bool Cell::is_middle_cell()
+{
+    return this->middle_cell;
+}
+
+void Cell::set_middle_cell()
+{
+    this->middle_cell = true;
 }
 
 unsigned long Cell::get_generation()

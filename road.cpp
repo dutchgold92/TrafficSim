@@ -12,6 +12,10 @@ Road::Road(unsigned long length, Cell::display_direction direction)
         Cell *cell = new Cell();
         cell->set_speed_limit(this->speed_limit);
         cell->set_direction(direction);
+
+        if(i == (length / 2))
+            cell->set_middle_cell();
+
         this->cells.push_back(cell);
     }
 

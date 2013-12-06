@@ -10,6 +10,8 @@ class Cell
 {
 public:
     Cell();
+    bool is_middle_cell();
+    void set_middle_cell();
     enum display_direction {left_to_right, top_to_bottom, bottom_to_top, right_to_left};
     unsigned long get_generation();
     void increment_generation();
@@ -31,6 +33,7 @@ public:
     void set_direction(display_direction direction);
     display_direction get_direction();
 private:
+    bool middle_cell;
     unsigned long generation;
     unsigned long display_generation;
     Vehicle *vehicle;

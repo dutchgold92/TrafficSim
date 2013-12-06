@@ -285,7 +285,7 @@ void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
     scene->addItem(new GraphicsCellItem(cell, x, y, this->cell_size, this->cell_size));
     cell->increment_display_generation();
 
-    if(this->show_road_directions && !cell->is_junction())
+    if(this->show_road_directions && cell->is_middle_cell())
         this->draw_directional_arrow(x, y, cell->get_direction());
 }
 
@@ -299,23 +299,23 @@ void MainWindow::draw_directional_arrow(qreal x, qreal y, Cell::display_directio
     {
         case Cell::left_to_right:
             arrow_y += this->cell_size;
-            arrow_text = ">";
+            arrow_text = QString::fromUtf8("→");
             break;
         case Cell::right_to_left:
             arrow_y += this->cell_size;
-            arrow_text = "<";
+            arrow_text = QString::fromUtf8("←");
             break;
         case Cell::top_to_bottom:
             arrow_x += this->cell_size;
-            arrow_text = "v";
+            arrow_text = QString::fromUtf8("↓");
             break;
         case Cell::bottom_to_top:
             arrow_x += this->cell_size;
-            arrow_text = "^";
+            arrow_text = QString::fromUtf8("↑");
             break;
     }
 
-    QGraphicsSimpleTextItem *arrow = new QGraphicsSimpleTextItem(0, this->scene);
+    QGraphicsSimpleTextItem *arrow = new QGraphicsSimpleTextItem(0);
     arrow->setBrush(QBrush(Qt::white));
     arrow->setText(arrow_text);
     arrow->setX(arrow_x);
