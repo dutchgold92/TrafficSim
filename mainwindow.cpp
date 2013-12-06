@@ -159,8 +159,6 @@ void MainWindow::draw_network()
 
     if(this->following_vehicle)
         this->follow_vehicle();
-
-    cout << this->network->get_actual_input_density() << endl;
 }
 
 void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y)
