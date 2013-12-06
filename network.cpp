@@ -104,19 +104,20 @@ void Network::step()
 
 void Network::synthesize_traffic()
 {
-    //FIXME: debugging
-    //cout << this->get_actual_input_density() << " / " << this->desired_input_density << endl;
+    vector<Cell*> cells;
 
-    for(vector<Road*>::iterator it = this->input_roads.begin(); (it != this->input_roads.end()) && (this->get_actual_input_density() <= this->get_desired_input_density()); ++it)
+    for(vector<Road*>::size_type i = 0; i < this->input_roads.size(); i++)
+        cells.push_back(((Road*)this->input_roads.at(i))->get_first_cell());
+
+    while((this->get_actual_input_density() < this->get_desired_input_density()) && !cells.empty())
     {
-        Cell *cell = ((Road*)*it)->get_first_cell();
+        unsigned int index = (rand() % cells.size() + 0);
+        Cell *cell = cells.at(index);
 
         if(!cell->has_vehicle())
-        {
-            Vehicle *v = new Vehicle(Vehicle::get_maximum_velocity() / 2);
-            v->set_generation(this->generation);
-            cell->set_vehicle(v);
-        }
+            cell->set_vehicle(new Vehicle(cell->get_speed_limit()));
+
+        cells.erase(cells.begin() + index);
     }
 }
 
@@ -350,11 +351,15 @@ float Network::get_actual_input_density()
     float vehicles = 0;
     float cells = 0;
 
-    for(vector<Road*>::iterator it = this->input_roads.begin(); it != this->input_roads.end(); ++it)
+    for(vector<Road*>::size_type i = 0; i < this->input_roads.size(); i++)
     {
-        for(unsigned long i = 0; i < ((Road*)*it)->get_length(); i++)
+        Road *r = this->input_roads.at(i);
+
+        for(unsigned long x = 0; x < r->get_length(); x++)
         {
-            if(((Cell*)((Road*)*it)->get_cell(i))->has_vehicle())
+            Cell *c = r->get_cell(x);
+
+            if(c->has_vehicle())
                 vehicles++;
 
             cells++;
