@@ -357,6 +357,9 @@ void MainWindow::follow_vehicle()
 {
     for(QList<QGraphicsItem*>::size_type i = 0; i < this->scene->items().size(); i++)
     {
+        if(this->scene->items().at(i)->type() != GraphicsCellItem::Type)
+            continue;
+
         GraphicsCellItem *cell = ((GraphicsCellItem*)this->scene->items().at(i));
 
         if(cell->has_vehicle())
