@@ -115,7 +115,11 @@ void Network::synthesize_traffic()
         Cell *cell = cells.at(index);
 
         if(!cell->has_vehicle())
-            cell->set_vehicle(new Vehicle(cell->get_speed_limit()));
+        {
+            Vehicle *v = new Vehicle(cell->get_speed_limit());
+            v->set_generation(this->generation);
+            cell->set_vehicle(v);
+        }
 
         cells.erase(cells.begin() + index);
     }

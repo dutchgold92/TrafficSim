@@ -247,9 +247,14 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionPlot">
+  <action name="actionPlotInputDensity">
    <property name="text">
     <string>Plot Incoming Traffic Density</string>
+   </property>
+  </action>
+  <action name="actionPlotInputAndOverallDensity">
+   <property name="text">
+    <string>Plot Incoming/Overall Traffic Density</string>
    </property>
   </action>
  </widget>
