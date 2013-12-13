@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     network.cpp \
     junction.cpp \
     networkupdater.cpp \
-    graphicscellitem.cpp
+    graphicscellitem.cpp \
+    qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
     vehicle.h \
@@ -33,6 +34,8 @@ HEADERS  += mainwindow.h \
     network.h \
     junction.h \
     networkupdater.h \
-    graphicscellitem.h
+    graphicscellitem.h \
+    qcustomplot.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    plotter.ui

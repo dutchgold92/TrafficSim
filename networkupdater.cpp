@@ -7,6 +7,7 @@ NetworkUpdater::NetworkUpdater(QObject *parent, Network *network) :
     this->network = network;
     this->stopped = false;
     connect(this, SIGNAL(network_updated()), parent, SLOT(draw_network()), Qt::QueuedConnection);
+    connect(this, SIGNAL(network_updated()), parent, SLOT(plot()), Qt::QueuedConnection);
 }
 
 void NetworkUpdater::run()

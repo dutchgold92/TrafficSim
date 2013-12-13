@@ -11,6 +11,7 @@
 #include <QtConcurrentRun>
 #include <unistd.h>
 #include <assert.h>
+#include <qcustomplot.h>
 
 #define DEFAULT_CELL_SIZE 10
 
@@ -37,6 +38,9 @@ private:
     Vehicle *vehicle_to_follow;
     qreal cell_size;
     bool show_road_directions;
+    QCustomPlot *plot_widget;
+    QVector<double> plot_data_x;
+    QVector<double> plot_data_y;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -50,6 +54,10 @@ private slots:
     void on_showRoadDirectionsInput_toggled(bool checked);
     void on_updateIntervalInput_valueChanged(int value);
     void on_densityInput_valueChanged(int value);
+    void on_actionPlot_triggered();
+    void on_closePlotButton_pressed();
+    void resizeEvent(QResizeEvent *);
+    void plot();
 signals:
     void network_updated();
 };
