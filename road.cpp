@@ -71,3 +71,8 @@ Cell::display_direction Road::get_direction()
 {
     return this->direction;
 }
+
+unsigned int Road::get_speed_limit()
+{
+    return this->speed_limit;
+}

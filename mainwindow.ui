@@ -119,13 +119,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="updateButton">
-        <property name="text">
-         <string>Update</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
@@ -242,7 +235,7 @@
      <x>0</x>
      <y>0</y>
      <width>713</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

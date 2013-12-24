@@ -51,7 +51,6 @@ public:
     ~MainWindow();
 private slots:
     void draw_network();
-    void on_updateButton_pressed();
     void on_playPauseButton_pressed();
     void on_stepButton_pressed();
     void scene_selection();

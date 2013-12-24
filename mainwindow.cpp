@@ -125,7 +125,7 @@ void MainWindow::init_network()
 
     // -- Init single road network
     /*
-    Road *road1 = new Road(1000, Cell::left_to_right);
+    Road *road1 = new Road(500, Cell::left_to_right);
     vector<Road*> roads;
     roads.push_back(road1);
     this->network = new Network(roads);
@@ -329,12 +329,6 @@ void MainWindow::draw_directional_arrow(qreal x, qreal y, Cell::display_directio
     scene->addItem(arrow);
 }
 
-void MainWindow::on_updateButton_pressed()
-{
-    this->update_thread->set_update_interval((float)ui->updateIntervalInput->value() / 100);
-    this->network->set_desired_input_density(((float)ui->densityInput->value()) / 100);
-}
-
 void MainWindow::on_playPauseButton_pressed()
 {
     if(this->updating)
@@ -412,6 +406,7 @@ void MainWindow::on_updateIntervalInput_valueChanged(int value)
     string.append(QString::number(value));
     string.append(" ms)");
     ui->updateIntervalValueLabel->setText(string);
+    this->update_thread->set_update_interval((float)ui->updateIntervalInput->value() / 100);
 }
 
 void MainWindow::on_densityInput_valueChanged(int value)
@@ -421,6 +416,7 @@ void MainWindow::on_densityInput_valueChanged(int value)
     string.append(QString::number(float(value) / 100));
     string.append(")");
     ui->densityInputValueLabel->setText(string);
+    this->network->set_desired_input_density(((float)ui->densityInput->value()) / 100);
 }
 
 void MainWindow::on_closePlotButton_pressed()

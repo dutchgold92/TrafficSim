@@ -3,7 +3,7 @@
 
 #include <cell.h>
 
-#define DEFAULT_SPEED_LIMIT 4
+#define DEFAULT_SPEED_LIMIT 5
 
 class Road
 {
@@ -16,6 +16,7 @@ public:
     Cell* get_last_cell();
     float get_density();
     Cell::display_direction get_direction();
+    unsigned int get_speed_limit();
 private:
     unsigned long length;
     unsigned int speed_limit;
