@@ -467,6 +467,7 @@ void MainWindow::plot()
 void MainWindow::on_actionPlotInputDensity_triggered()
 {
     this->plot_type = input_density;
+    ui->plotLayout->removeWidget(this->plot_widget);
     ui->plotLayout->addWidget(this->plot_widget = new QCustomPlot(this->plot_widget));
     this->plot_widget->xAxis->setLabel("Time Steps");
     this->plot_widget->xAxis->setRange(-this->plot_time_steps, 0);
@@ -494,7 +495,7 @@ void MainWindow::on_actionPlotInputDensity_triggered()
 void MainWindow::on_actionPlotInputAndOverallDensity_triggered()
 {
     this->plot_type = overall_density_vs_input_density;
-
+    ui->plotLayout->removeWidget(this->plot_widget);
     ui->plotLayout->addWidget(this->plot_widget = new QCustomPlot(this->plot_widget));
     this->plot_widget->xAxis->setLabel("Time Steps");
     this->plot_widget->xAxis->setRange(-this->plot_time_steps, 0);
