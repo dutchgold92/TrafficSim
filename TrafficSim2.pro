@@ -16,7 +16,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     vehicle.cpp \
     car.cpp \
-    truck.cpp \
     cell.cpp \
     road.cpp \
     network.cpp \
@@ -28,7 +27,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     vehicle.h \
     car.h \
-    truck.h \
     cell.h \
     road.h \
     network.h \

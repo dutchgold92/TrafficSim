@@ -100,6 +100,8 @@ void Network::step()
 {
     this->synthesize_traffic();
     this->process();
+
+    cout << this->get_desired_input_density() << " but is : " << this->get_actual_input_density() << endl;
 }
 
 void Network::synthesize_traffic()
@@ -352,25 +354,13 @@ float Network::get_desired_input_density()
 
 float Network::get_actual_input_density()
 {
-    float vehicles = 0;
-    float cells = 0;
+    float densities = 0;
+    unsigned int roads = this->input_roads.size();
 
-    for(vector<Road*>::size_type i = 0; i < this->input_roads.size(); i++)
-    {
-        Road *r = this->input_roads.at(i);
+    for(vector<Road*>::size_type i = 0; i < roads; i++)
+        densities += ((Road*)this->input_roads.at(i))->get_density();
 
-        for(unsigned long x = 0; x < r->get_length(); x++)
-        {
-            Cell *c = r->get_cell(x);
-
-            if(c->has_vehicle())
-                vehicles++;
-
-            cells++;
-        }
-    }
-
-    return(vehicles / cells);
+    return(densities / (float)roads);
 }
 
 float Network::get_overall_density()

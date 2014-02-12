@@ -73,6 +73,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::init_network()
 {
+    /*
     // -- Init complex network
     Road *road = new Road(25, Cell::left_to_right);
     Road *road2 = new Road(25, Cell::bottom_to_top);
@@ -122,14 +123,13 @@ void MainWindow::init_network()
     roads.push_back(road11);
     roads.push_back(road12);
     this->network = new Network(roads);
+    */
 
     // -- Init single road network
-    /*
-    Road *road1 = new Road(500, Cell::left_to_right);
+    Road *road1 = new Road(50, Cell::left_to_right);
     vector<Road*> roads;
     roads.push_back(road1);
     this->network = new Network(roads);
-    */
 
     // -- Init loop network
     /*
