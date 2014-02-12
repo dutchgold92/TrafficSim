@@ -98,32 +98,51 @@ vector<Junction*> Network::get_junctions()
 
 void Network::step()
 {
-    this->synthesize_traffic();
     this->process();
+    this->synthesize_traffic();
 
     cout << this->get_desired_input_density() << " but is : " << this->get_actual_input_density() << endl;
 }
 
 void Network::synthesize_traffic()
 {
-    vector<Cell*> cells;
+    vector<vector<Cell*> > cells;
 
     for(vector<Road*>::size_type i = 0; i < this->input_roads.size(); i++)
-        cells.push_back(((Road*)this->input_roads.at(i))->get_first_cell());
+    {
+        Road *r = this->input_roads.at(i);
+        vector<Cell*> v;
+
+        for(vector<Cell*>::size_type x = 0; x < r->get_length() && x < r->get_speed_limit(); x++)
+        {
+            Cell *c = r->get_cell(x);
+
+            if(!c->has_vehicle())
+                v.push_back(c);
+            else
+                break;
+        }
+
+        if(!v.empty())
+            cells.push_back(v);
+    }
 
     while((this->get_actual_input_density() < this->get_desired_input_density()) && !cells.empty())
     {
         unsigned int index = (rand() % cells.size() + 0);
-        Cell *cell = cells.at(index);
 
-        if(!cell->has_vehicle())
+        if(!cells.at(index).empty())
         {
+            Cell *cell = cells.at(index).back();
+
             Vehicle *v = new Vehicle(cell->get_speed_limit());
             v->set_generation(this->generation);
             cell->set_vehicle(v);
-        }
 
-        cells.erase(cells.begin() + index);
+            cells.at(index).pop_back();
+        }
+        else
+            cells.erase(cells.begin() + index);
     }
 }
 
