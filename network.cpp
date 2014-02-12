@@ -101,7 +101,7 @@ void Network::step()
     this->process();
     this->synthesize_traffic();
 
-    cout << this->get_desired_input_density() << " but is : " << this->get_actual_input_density() << endl;
+    cout << this->get_desired_input_density() << " but is : " << this->get_actual_input_density() << " [network::step()]" << endl;
 }
 
 void Network::synthesize_traffic()
