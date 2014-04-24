@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+/**
+ * @brief MainWindow::MainWindow Initialises the MainWindow.
+ * @param parent Unused parameter.
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -66,14 +70,19 @@ MainWindow::MainWindow(QWidget *parent) :
     this->update_thread->start();
 }
 
+/**
+ * @brief MainWindow::~MainWindow Destroys the MainWindow.
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/**
+ * @brief MainWindow::init_network Initialises the model road network.
+ */
 void MainWindow::init_network()
 {
-    /*
     // -- Init complex network
     Road *road = new Road(25, Cell::left_to_right);
     Road *road2 = new Road(25, Cell::bottom_to_top);
@@ -123,39 +132,11 @@ void MainWindow::init_network()
     roads.push_back(road11);
     roads.push_back(road12);
     this->network = new Network(roads);
-    */
-
-    // -- Init single road network
-    Road *road1 = new Road(50, Cell::left_to_right);
-    vector<Road*> roads;
-    roads.push_back(road1);
-    this->network = new Network(roads);
-
-    // -- Init loop network
-    /*
-    Road *road1 = new Road(50, Cell::left_to_right);
-    Road *road2 = new Road(25, Cell::top_to_bottom);
-    Road *road3 = new Road(50, Cell::right_to_left);
-    Road *road4 = new Road(25, Cell::bottom_to_top);
-
-    Junction *j1 = new Junction();
-    j1->connect_roads(road1, road2);
-    Junction *j2 = new Junction();
-    j2->connect_roads(road2, road3);
-    Junction *j3 = new Junction();
-    j3->connect_roads(road3, road4);
-    Junction *j4 = new Junction();
-    j4->connect_roads(road4, road1);
-
-    vector<Road*> roads;
-    roads.push_back(road1);
-    roads.push_back(road2);
-    roads.push_back(road3);
-    roads.push_back(road4);
-    this->network = new Network(roads);
-    */
 }
 
+/**
+ * @brief MainWindow::draw_network Draws the model road network unto the GUI.
+ */
 void MainWindow::draw_network()
 {
     this->scene->clear();
@@ -167,6 +148,13 @@ void MainWindow::draw_network()
         this->follow_vehicle();
 }
 
+/**
+ * @brief MainWindow::process_road Processes a road, drawing its cells unto the GUI.
+ * @param first_cell Starting cell.
+ * @param forward_processing Direction of processing.
+ * @param x Drawing coordinate on the x-axis.
+ * @param y Drawing coordinate on the y-axis.
+ */
 void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x, qreal y)
 {
     Cell *cell = first_cell;
@@ -286,6 +274,12 @@ void MainWindow::process_road(Cell *first_cell, bool forward_processing, qreal x
     }
 }
 
+/**
+ * @brief MainWindow::process_cell Processes an individual cell, drawing it unto the GUI.
+ * @param cell Cell to represent.
+ * @param x Drawing coordinate on the x-axis.
+ * @param y Drawing coordinate on the y-axis.
+ */
 void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
 {
     scene->addItem(new GraphicsCellItem(cell, x, y, this->cell_size, this->cell_size));
@@ -295,6 +289,12 @@ void MainWindow::process_cell(Cell *cell, qreal x, qreal y)
         this->draw_directional_arrow(x, y, cell->get_direction());
 }
 
+/**
+ * @brief MainWindow::draw_directional_arrow Draws an arrow unto the GUI, to indicate the direction of a road.
+ * @param x Drawing coordinate on the x-axis.
+ * @param y Drawing coordinate on the y-axis.
+ * @param direction Direction of arrow to draw.
+ */
 void MainWindow::draw_directional_arrow(qreal x, qreal y, Cell::display_direction direction)
 {
     qreal arrow_x = x;
@@ -329,6 +329,9 @@ void MainWindow::draw_directional_arrow(qreal x, qreal y, Cell::display_directio
     scene->addItem(arrow);
 }
 
+/**
+ * @brief MainWindow::on_playPauseButton_pressed Toggles updating of the simulation.
+ */
 void MainWindow::on_playPauseButton_pressed()
 {
     if(this->updating)
@@ -347,12 +350,19 @@ void MainWindow::on_playPauseButton_pressed()
     this->updating = !this->updating;
 }
 
+/**
+ * @brief MainWindow::on_stepButton_pressed Invokes a single evolution of the model.
+ */
 void MainWindow::on_stepButton_pressed()
 {
     this->network->step();
     emit(network_updated());
 }
 
+/**
+ * @brief MainWindow::follow_vehicle Tracks the followed vehicle's movement through the model since last generation,
+ * setting its new parent cell as selected.
+ */
 void MainWindow::follow_vehicle()
 {
     for(QList<QGraphicsItem*>::size_type i = 0; i < this->scene->items().size(); i++)
@@ -376,6 +386,9 @@ void MainWindow::follow_vehicle()
     this->vehicle_to_follow = 0;
 }
 
+/**
+ * @brief MainWindow::scene_selection Reacts to selections in the model drawing area of the GUI.
+ */
 void MainWindow::scene_selection()
 {
     if(this->scene->selectedItems().isEmpty())
@@ -388,17 +401,26 @@ void MainWindow::scene_selection()
         this->following_vehicle = true;
     }
 }
+/**
+ * @brief MainWindow::on_displayScaleInput_valueChanged Scales display.
+ */
 
 void MainWindow::on_displayScaleInput_valueChanged(int value)
 {
     this->cell_size = value;
 }
 
+/**
+ * @brief MainWindow::on_showRoadDirectionsInput_toggled Toggles display of directional arrows next to roads in the GUI.
+ */
 void MainWindow::on_showRoadDirectionsInput_toggled(bool checked)
 {
     this->show_road_directions = checked;
 }
 
+/**
+ * @brief MainWindow::on_updateIntervalInput_valueChanged Reacts to user modification of the GUI's update interval.
+ */
 void MainWindow::on_updateIntervalInput_valueChanged(int value)
 {
     QString string;
@@ -409,6 +431,9 @@ void MainWindow::on_updateIntervalInput_valueChanged(int value)
     this->update_thread->set_update_interval((float)ui->updateIntervalInput->value() / 100);
 }
 
+/**
+ * @brief MainWindow::on_densityInput_valueChanged Reacts to user modification of the model's desired traffic density.
+ */
 void MainWindow::on_densityInput_valueChanged(int value)
 {
     QString string;
@@ -419,6 +444,9 @@ void MainWindow::on_densityInput_valueChanged(int value)
     this->network->set_desired_input_density(((float)ui->densityInput->value()) / 100);
 }
 
+/**
+ * @brief MainWindow::on_closePlotButton_pressed Closes the plotting pane.
+ */
 void MainWindow::on_closePlotButton_pressed()
 {
     this->plot_widget->hide();
@@ -429,6 +457,9 @@ void MainWindow::on_closePlotButton_pressed()
     ui->closePlotButton->hide();
 }
 
+/**
+ * @brief MainWindow::resizeEvent Reacts to user resizing of the window.
+ */
 void MainWindow::resizeEvent(QResizeEvent *)
 {
     if(this->plot_widget != 0 && !this->plot_widget->isHidden())
@@ -438,6 +469,9 @@ void MainWindow::resizeEvent(QResizeEvent *)
     }
 }
 
+/**
+ * @brief MainWindow::plot Plots model data.
+ */
 void MainWindow::plot()
 {
     if(this->plot_widget != 0)
@@ -464,6 +498,10 @@ void MainWindow::plot()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionPlotInputDensity_triggered Opens the plotting pane to plot input density,
+ * based on user selection.
+ */
 void MainWindow::on_actionPlotInputDensity_triggered()
 {
     this->plot_type = input_density;
@@ -491,7 +529,10 @@ void MainWindow::on_actionPlotInputDensity_triggered()
     ui->closePlotButton->show();
 }
 
-
+/**
+ * @brief MainWindow::on_actionPlotInputAndOverallDensity_triggered Opens the plotting pane to plot input density
+ * and overall density, based on user selection.
+ */
 void MainWindow::on_actionPlotInputAndOverallDensity_triggered()
 {
     this->plot_type = overall_density_vs_input_density;

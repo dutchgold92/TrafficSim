@@ -5,6 +5,11 @@
 
 using namespace std;
 
+/**
+ * @brief main Launches the application.
+ * @param argc Unused parameter.
+ * @param argv Unused parameter.
+ */
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

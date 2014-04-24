@@ -8,14 +8,12 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = TrafficSim2
+TARGET = TrafficSim
 TEMPLATE = app
-
 
 SOURCES += main.cpp\
         mainwindow.cpp \
     vehicle.cpp \
-    car.cpp \
     cell.cpp \
     road.cpp \
     network.cpp \
@@ -26,7 +24,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     vehicle.h \
-    car.h \
     cell.h \
     road.h \
     network.h \

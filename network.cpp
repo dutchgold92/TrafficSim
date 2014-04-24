@@ -2,6 +2,10 @@
 
 using namespace std;
 
+/**
+ * @brief Network::Network Basic initialisation of the Network object.
+ * @param roads Roads to use for the model.
+ */
 Network::Network(vector<Road*> roads)
 {
     this->generation = 0;
@@ -10,6 +14,9 @@ Network::Network(vector<Road*> roads)
     init();
 }
 
+/**
+ * @brief Network::init Further initialisation of the Network object.
+ */
 void Network::init()
 {
     this->init_traffic();
@@ -18,6 +25,9 @@ void Network::init()
     this->identify_junctions();
 }
 
+/**
+ * @brief Network::init_traffic Initialises traffic in the model.
+ */
 void Network::init_traffic()
 {
     while(this->get_overall_density() < this->get_desired_input_density())
@@ -40,6 +50,9 @@ void Network::init_traffic()
     }
 }
 
+/**
+ * @brief Network::identify_input_roads Detects input roads.
+ */
 void Network::identify_input_roads()
 {
     for(vector<Road*>::iterator it = this->roads.begin(); it != this->roads.end(); ++it)
@@ -47,6 +60,9 @@ void Network::identify_input_roads()
             this->input_roads.push_back((Road*)*it);
 }
 
+/**
+ * @brief Network::identify_output_roads Detects output roads.
+ */
 void Network::identify_output_roads()
 {
     for(vector<Road*>::reverse_iterator it = this->roads.rbegin(); it != this->roads.rend(); ++it)
@@ -54,6 +70,9 @@ void Network::identify_output_roads()
             this->output_roads.push_back((Road*)*it);
 }
 
+/**
+ * @brief Network::identify_junctions Detects cells which are Junction objects.
+ */
 void Network::identify_junctions()
 {
     for(vector<Road*>::iterator it = this->roads.begin(); it != this->roads.end(); ++it)
@@ -72,6 +91,10 @@ void Network::identify_junctions()
     }
 }
 
+/**
+ * @brief Network::is_known_junction Returns true if a Junction object has already been learned by identify_junctions().
+ * @param junction Junction to find.
+ */
 bool Network::is_known_junction(Junction *junction)
 {
     if(this->junctions.empty())
@@ -86,24 +109,34 @@ bool Network::is_known_junction(Junction *junction)
     return false;
 }
 
+/**
+ * @brief Network::get_roads Returns a vector of all Road objects in the Network.
+ */
 vector<Road*> Network::get_roads()
 {
     return this->roads;
 }
 
+/**
+ * @brief Network::get_junctions Returns a vector of all Junction objects in the Network.
+ */
 vector<Junction*> Network::get_junctions()
 {
     return this->junctions;
 }
 
+/**
+ * @brief Network::step Orders a single evolution of the model.
+ */
 void Network::step()
 {
     this->process();
     this->synthesize_traffic();
-
-    cout << this->get_desired_input_density() << " but is : " << this->get_actual_input_density() << " [network::step()]" << endl;
 }
 
+/**
+ * @brief Network::synthesize_traffic Creates new traffic in the model, attempting to meet density requirements.
+ */
 void Network::synthesize_traffic()
 {
     vector<vector<Cell*> > cells;
@@ -146,6 +179,9 @@ void Network::synthesize_traffic()
     }
 }
 
+/**
+ * @brief Network::process Processes a single model evolution, applying rules.
+ */
 void Network::process()
 {
     this->generation++;
@@ -157,6 +193,11 @@ void Network::process()
         ((Junction*)this->junctions.at(i))->toggle_active_incoming_road();
 }
 
+/**
+ * @brief Network::process_road Processes a single model road, applying rules to its cells.
+ * @param first_cell Cell at which to start.
+ * @param forward_processing Direction of processing.
+ */
 void Network::process_road(Cell *first_cell, bool forward_processing)
 {
     Cell *cell = first_cell;
@@ -198,6 +239,10 @@ void Network::process_road(Cell *first_cell, bool forward_processing)
     }
 }
 
+/**
+ * @brief Network::process_cell Processes a single model cell, applying rules to it.
+ * @param cell Cell to manipulate.
+ */
 void Network::process_cell(Cell *cell)
 {
     if(cell->has_vehicle() && cell->get_vehicle()->get_generation() < this->generation)
@@ -213,6 +258,11 @@ void Network::process_cell(Cell *cell)
     cell->increment_generation();
 }
 
+/**
+ * @brief Network::apply_acceleration Applies the acceleration rule to a cell.
+ * @param cell Cell to manipulate.
+ * @param vehicle Vehicle to manipulate.
+ */
 void Network::apply_acceleration(Cell *cell, Vehicle *vehicle)
 {
     if(vehicle->get_velocity() < vehicle->get_maximum_velocity())
@@ -222,6 +272,11 @@ void Network::apply_acceleration(Cell *cell, Vehicle *vehicle)
     }
 }
 
+/**
+ * @brief Network::apply_deceleration Applies the deceleration rule to a cell.
+ * @param cell Cell to manipulate.
+ * @param vehicle Vehicle to manipulate.
+ */
 void Network::apply_deceleration(Cell *cell, Vehicle *vehicle)
 {
     if(vehicle->get_velocity() > 0)
@@ -251,12 +306,21 @@ void Network::apply_deceleration(Cell *cell, Vehicle *vehicle)
     }
 }
 
+/**
+ * @brief Network::apply_randomisation Applies the randomisation rule to a cell's vehicle.
+ * @param vehicle Vehicle to randomise.
+ */
 void Network::apply_randomisation(Vehicle *vehicle)
 {
-    if((rand() % 5 + 0) == 4)   // FIXME: bad randomisation
+    if((rand() % 5 + 0) == 4)
         vehicle->decrement_velocity();
 }
 
+/**
+ * @brief Network::apply_motion_to_road Applies the progress rule to a road, cell by cell.
+ * @param last_cell Cell at which to end.
+ * @param forward_processing Direction of processing.
+ */
 void Network::apply_motion_to_road(Cell *last_cell, bool forward_processing)
 {
     Cell *cell = last_cell;
@@ -300,6 +364,10 @@ void Network::apply_motion_to_road(Cell *last_cell, bool forward_processing)
     }
 }
 
+/**
+ * @brief Network::apply_motion_to_cell Applies the progress rule to a single cell.
+ * @param cell Cell to process.
+ */
 void Network::apply_motion_to_cell(Cell *cell)
 {
     cell->increment_generation();
@@ -329,6 +397,10 @@ void Network::apply_motion_to_cell(Cell *cell)
     }
 }
 
+/**
+ * @brief Network::get_front_clearance Returns the front vehicle clearance from a particular cell.
+ * @param cell Cell for which to calculate clearance.
+ */
 unsigned long Network::get_front_clearance(Cell *cell)
 {
     unsigned long distance = 0;
@@ -345,6 +417,10 @@ unsigned long Network::get_front_clearance(Cell *cell)
     return numeric_limits<unsigned long int>::max();
 }
 
+/**
+ * @brief Network::get_distance_to_next_junction Returns the vehicle clearance to next Junction.
+ * @param cell Cell from which to begin.
+ */
 unsigned long Network::get_distance_to_next_junction(Cell *cell)
 {
     unsigned long distance = 0;
@@ -361,16 +437,25 @@ unsigned long Network::get_distance_to_next_junction(Cell *cell)
     return numeric_limits<unsigned long int>::max();
 }
 
+/**
+ * @brief Network::set_desired_input_density Set the model's optimal input density value.
+ */
 void Network::set_desired_input_density(float desired_input_density)
 {
     this->desired_input_density = desired_input_density;
 }
 
+/**
+ * @brief Network::get_desired_input_density Returns the model's optimal input density value.
+ */
 float Network::get_desired_input_density()
 {
     return this->desired_input_density;
 }
 
+/**
+ * @brief Network::get_actual_input_density Returns the model's actual input density.
+ */
 float Network::get_actual_input_density()
 {
     float densities = 0;
@@ -382,6 +467,9 @@ float Network::get_actual_input_density()
     return(densities / (float)roads);
 }
 
+/**
+ * @brief Network::get_overall_density Returns the model's actual overall density.
+ */
 float Network::get_overall_density()
 {
     float roads = this->roads.size();
@@ -393,6 +481,9 @@ float Network::get_overall_density()
     return (densities / roads);
 }
 
+/**
+ * @brief Network::get_input_roads Returns a vector of the model's input Road objects.
+ */
 vector<Road*> Network::get_input_roads()
 {
     return this->input_roads;

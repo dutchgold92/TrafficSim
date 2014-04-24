@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#define DEFAULT_INITIAL_DENSITY 0.2
+#define DEFAULT_INITIAL_DENSITY 0.4
 
 using namespace std;
 
