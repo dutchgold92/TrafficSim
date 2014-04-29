@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gfx->setScene(scene);
     ui->gfx->addAction(ui->actionPlotInputDensity);
     ui->gfx->addAction(ui->actionPlotInputAndOverallDensity);
+    ui->gfx->addAction(ui->actionPlotComputationTime);
     ui->gfx->show();
     ui->updateIntervalInput->setValue(DEFAULT_UPDATE_INTERVAL * 100);
     ui->densityInput->setValue(DEFAULT_INITIAL_DENSITY * 100);
@@ -85,17 +86,29 @@ void MainWindow::init_network()
 {
     // -- Init complex network
     Road *road = new Road(25, Cell::left_to_right);
-    Road *road2 = new Road(25, Cell::bottom_to_top);
-    Road *road3 = new Road(25, Cell::left_to_right);
-    Road *road4 = new Road(25, Cell::top_to_bottom);
-    Road *road5 = new Road(5, Cell::bottom_to_top);
-    Road *road6 = new Road(25, Cell::left_to_right);
-    Road *road7 = new Road(25, Cell::left_to_right);
-    Road *road8 = new Road(5, Cell::top_to_bottom);
-    Road *road9 = new Road(25, Cell::left_to_right);
-    Road *road10 = new Road(25, Cell::top_to_bottom);
-    Road *road11 = new Road(25, Cell::right_to_left);
-    Road *road12 = new Road(10, Cell::top_to_bottom);
+   Road *road2 = new Road(25, Cell::bottom_to_top);
+   Road *road3 = new Road(25, Cell::left_to_right);
+   Road *road4 = new Road(25, Cell::top_to_bottom);
+   Road *road5 = new Road(5, Cell::bottom_to_top);
+   Road *road6 = new Road(25, Cell::left_to_right);
+   Road *road7 = new Road(25, Cell::left_to_right);
+   Road *road8 = new Road(5, Cell::top_to_bottom);
+   Road *road9 = new Road(500, Cell::left_to_right);
+   Road *road10 = new Road(25, Cell::top_to_bottom);
+   Road *road11 = new Road(25, Cell::right_to_left);
+   Road *road12 = new Road(5000, Cell::top_to_bottom);
+   Road *road13 = new Road(500, Cell::right_to_left);
+   Road *road14 = new Road(25, Cell::right_to_left);
+   Road *road15 = new Road(25, Cell::left_to_right);
+   Road *road16 = new Road(500, Cell::bottom_to_top);
+   Road *road17 = new Road(500, Cell::bottom_to_top);
+   Road *road18 = new Road(25, Cell::left_to_right);
+   Road *road19 = new Road(1001, Cell::right_to_left);
+   Road *road20 = new Road(25, Cell::top_to_bottom);
+   Road *road21 = new Road(500, Cell::right_to_left);
+   Road *road22 = new Road(495, Cell::top_to_bottom);
+   Road *road23 = new Road(500, Cell::left_to_right);
+
     Junction *junction = new Junction();
     junction->connect_roads(road, road3);
     junction->connect_roads(road2, road3);
@@ -114,9 +127,29 @@ void MainWindow::init_network()
     junction5->connect_roads(road8, road10);
     Junction *junction6 = new Junction();
     junction6->connect_roads(road10, road11);
+    junction6->connect_roads(road13, road11);
+    junction6->connect_roads(road17, road11);
     Junction *junction7 = new Junction();
     junction7->connect_roads(road11, road12);
+    junction7->connect_roads(road11, road14);
     junction7->connect_roads(road4, road12);
+    Junction *junction8 = new Junction();
+    junction8->connect_roads(road14, road2);
+    junction8->connect_roads(road15, road2);
+    junction8->connect_roads(road16, road2);
+    Junction *junction9 = new Junction();
+    junction9->connect_roads(road18, road16);
+    Junction *junction10 = new Junction();
+    junction10->connect_roads(road19, road17);
+    Junction *junction11 = new Junction();
+    junction11->connect_roads(road9, road20);
+    Junction *junction12 = new Junction();
+    junction12->connect_roads(road20, road13);
+    junction12->connect_roads(road20, road22);
+    junction12->connect_roads(road21, road13);
+    junction12->connect_roads(road21, road22);
+    Junction *junction13 = new Junction();
+    junction13->connect_roads(road22, road23);
 
     vector<Road*> roads;
     roads.push_back(road);
@@ -131,6 +164,18 @@ void MainWindow::init_network()
     roads.push_back(road10);
     roads.push_back(road11);
     roads.push_back(road12);
+    roads.push_back(road13);
+    roads.push_back(road14);
+    roads.push_back(road15);
+    roads.push_back(road16);
+    roads.push_back(road17);
+    roads.push_back(road18);
+    roads.push_back(road19);
+    roads.push_back(road20);
+    roads.push_back(road21);
+    roads.push_back(road22);
+    roads.push_back(road23);
+
     this->network = new Network(roads);
 }
 
@@ -492,6 +537,11 @@ void MainWindow::plot()
                 this->plot_widget->graph(1)->setData(this->plot_data_x, this->plot_data_y2);
                 this->plot_widget->graph(1)->setPen(QPen(Qt::red));
                 break;
+            case compute_time:
+                this->plot_data_y.pop_front();
+                this->plot_data_y.push_back(this->network->get_last_evolution_time());
+                this->plot_widget->graph(0)->setData(this->plot_data_x, this->plot_data_y);
+                break;
         }
 
         this->plot_widget->replot();
@@ -504,6 +554,9 @@ void MainWindow::plot()
  */
 void MainWindow::on_actionPlotInputDensity_triggered()
 {
+    if(this->plot_widget != 0)
+        this->on_closePlotButton_pressed();
+
     this->plot_type = input_density;
     ui->plotLayout->removeWidget(this->plot_widget);
     ui->plotLayout->addWidget(this->plot_widget = new QCustomPlot(this->plot_widget));
@@ -535,6 +588,9 @@ void MainWindow::on_actionPlotInputDensity_triggered()
  */
 void MainWindow::on_actionPlotInputAndOverallDensity_triggered()
 {
+    if(this->plot_widget != 0)
+        this->on_closePlotButton_pressed();
+
     this->plot_type = overall_density_vs_input_density;
     ui->plotLayout->removeWidget(this->plot_widget);
     ui->plotLayout->addWidget(this->plot_widget = new QCustomPlot(this->plot_widget));
@@ -556,6 +612,40 @@ void MainWindow::on_actionPlotInputAndOverallDensity_triggered()
     }
 
     this->plot_widget->addGraph();
+    this->plot_widget->addGraph();
+    this->plot();
+    this->plot_widget->show();
+    ui->closePlotButton->show();
+}
+
+/**
+ * @brief MainWindow::on_actionPlotComputationTime_triggered Plots time taken to compute model
+ * in each of the last 20 generations.
+ */
+void MainWindow::on_actionPlotComputationTime_triggered()
+{
+    if(this->plot_widget != 0)
+        this->on_closePlotButton_pressed();
+
+    this->plot_type = compute_time;
+    ui->plotLayout->removeWidget(this->plot_widget);
+    ui->plotLayout->addWidget(this->plot_widget = new QCustomPlot(this->plot_widget));
+    this->plot_widget->xAxis->setLabel("Model Generation");
+    this->plot_widget->xAxis->setRange(-20, 0);
+    this->plot_widget->yAxis->setLabel("Computation Time (ms)");
+    this->plot_widget->yAxis->setRange(0, (this->network->get_last_evolution_time() * 10));
+    this->plot_widget->setMinimumWidth(this->frameSize().width() / 2);
+    this->plot_widget->setMinimumHeight(this->frameSize().height() / 2);
+    this->plot_data_x.clear();
+    this->plot_data_y.clear();
+    this->plot_data_y2.clear();
+
+    for(signed int i = 0; i < 20; i++)
+    {
+        this->plot_data_x.push_back(i - 20);
+        this->plot_data_y.push_back(0);
+    }
+
     this->plot_widget->addGraph();
     this->plot();
     this->plot_widget->show();

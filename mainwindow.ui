@@ -250,6 +250,14 @@
     <string>Plot Incoming/Overall Traffic Density</string>
    </property>
   </action>
+  <action name="actionPlotComputationTime">
+   <property name="text">
+    <string>Plot Model Computation Time</string>
+   </property>
+   <property name="toolTip">
+    <string>Plot Model Computation Time</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

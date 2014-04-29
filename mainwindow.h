@@ -40,7 +40,7 @@ private:
     qreal cell_size;
     bool show_road_directions;
     QCustomPlot *plot_widget;
-    enum Plot_Type {input_density, overall_density_vs_input_density};
+    enum Plot_Type {input_density, overall_density_vs_input_density, compute_time};
     Plot_Type plot_type;
     signed int plot_time_steps;
     QVector<double> plot_data_x;
@@ -63,6 +63,7 @@ private slots:
     void plot(); 
     void on_actionPlotInputAndOverallDensity_triggered();
     void on_actionPlotInputDensity_triggered();
+    void on_actionPlotComputationTime_triggered();
 signals:
     void network_updated();
 };

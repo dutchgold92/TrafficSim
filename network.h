@@ -9,8 +9,9 @@
 #include <limits>
 #include <iostream>
 #include <stdlib.h>
+#include <QElapsedTimer>
 
-#define DEFAULT_INITIAL_DENSITY 0.4
+#define DEFAULT_INITIAL_DENSITY 0.6
 
 using namespace std;
 
@@ -23,6 +24,7 @@ private:
     vector<Road*> output_roads;
     vector<Junction*> junctions;
     float desired_input_density;
+    unsigned int last_evolution_time;
     void init();
     void init_traffic();
     void identify_input_roads();
@@ -51,6 +53,7 @@ public:
     float get_actual_input_density();
     float get_overall_density();
     vector<Road*> get_input_roads();
+    unsigned int get_last_evolution_time();
 };
 
 #endif // NETWORK_H

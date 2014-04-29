@@ -23,6 +23,7 @@ void Network::init()
     this->identify_input_roads();
     this->identify_output_roads();
     this->identify_junctions();
+    this->last_evolution_time = 0;
 }
 
 /**
@@ -130,8 +131,13 @@ vector<Junction*> Network::get_junctions()
  */
 void Network::step()
 {
+    QElapsedTimer timer;
+    timer.start();
+
     this->process();
     this->synthesize_traffic();
+
+    this->last_evolution_time = timer.elapsed();
 }
 
 /**
@@ -185,9 +191,9 @@ void Network::synthesize_traffic()
 void Network::process()
 {
     this->generation++;
-    this->process_road(((Road*)this->roads.back())->get_last_cell(), false);
+    this->process_road(((Road*)this->roads.front())->get_first_cell(), true);
     this->generation++;
-    this->apply_motion_to_road(((Road*)this->roads.back())->get_last_cell(), false);
+    this->apply_motion_to_road(((Road*)this->roads.front())->get_first_cell(), true);
 
     for(unsigned int i = 0; i < this->junctions.size(); i++)
         ((Junction*)this->junctions.at(i))->toggle_active_incoming_road();
@@ -487,4 +493,12 @@ float Network::get_overall_density()
 vector<Road*> Network::get_input_roads()
 {
     return this->input_roads;
+}
+
+/**
+ * @brief Network::get_last_evolution_time Returns this->last_evolution_time.
+ */
+unsigned int Network::get_last_evolution_time()
+{
+    return this->last_evolution_time;
 }
